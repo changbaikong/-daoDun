@@ -8,6 +8,9 @@ import { getAccountArticles, getAccounts, getFeed, getSite } from './api.js';
  */
 const PAGE_SIZE = 12;
 
+// 只有 JS 正常加载时才启用「渐入」动画，避免无 JS 时内容被隐藏。
+document.documentElement.classList.add('js-reveal');
+
 const state = {
   site: null,
   accounts: [],
@@ -66,6 +69,32 @@ function toast(message) {
 
 function accountLabel(account) {
   return account?.nickname || account?.username || '';
+}
+
+/** 图下文章区第一次进入视口时渐入，避免从横图直接切到列表太突兀。 */
+function initReveal() {
+  const items = $$('[data-reveal]');
+  if (items.length === 0) return;
+
+  if (
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    typeof IntersectionObserver === 'undefined'
+  ) {
+    for (const item of items) item.classList.add('is-revealed');
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-revealed');
+        observer.unobserve(entry.target);
+      }
+    },
+    { threshold: 0.08, rootMargin: '0px 0px -4% 0px' },
+  );
+  for (const item of items) observer.observe(item);
 }
 
 /* ------------------------------------------------------------------ */
@@ -293,6 +322,7 @@ function readAccountFromUrl() {
 
 async function boot() {
   wireEvents();
+  initReveal();
 
   const [siteResult, accountsResult] = await Promise.allSettled([getSite(), getAccounts()]);
 
