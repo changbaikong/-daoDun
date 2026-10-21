@@ -23,6 +23,9 @@ test('主库初始化：版本号、默认站点配置、账号库按需创建',
     assert.equal(site.title, '刀盾的小屋');
     assert.ok(site.mascotName.length > 0);
     assert.ok(site.subtitle.length > 0);
+    assert.equal(site.aboutTitle, '关于这个小站');
+    assert.match(site.aboutText, /Node\.js \+ SQLite/);
+    assert.deepEqual(site.aboutTags.split(','), ['Node.js', 'SQLite', 'Vanilla JS', '账号分库', '零依赖']);
 
     const account = app.services.accounts.create({ username: 'alice', nickname: '爱丽丝' });
     const accountFile = path.join(dataDir, 'accounts', `account-${account.id}.db`);

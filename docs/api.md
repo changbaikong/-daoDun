@@ -51,7 +51,10 @@
     "owner": "Jk",
     "mascotName": "小星",
     "mascotLine": "欢迎回来，今天也一起写点什么吧～",
-    "footer": "© 2026 Jk · 用 SQLite 写下每一个字"
+    "footer": "© 2026 Jk · 用 SQLite 写下每一个字",
+    "aboutTitle": "关于这个小站",
+    "aboutText": "一个用 **Node.js + SQLite** 搭起来的个人博客：主库登记账号，每个账号拥有独立的文章库；前端原生 HTML / CSS / JavaScript，没有构建步骤。",
+    "aboutTags": "Node.js,SQLite,Vanilla JS,账号分库,零依赖"
   }
 }
 ```
@@ -171,6 +174,7 @@
 | 路径 | 说明 |
 | --- | --- |
 | `/` | 看板娘起始页（看板娘以文字问候出现，无立绘） |
+| `/about` | 关于页（标题 / 正文 / 标签来自主库 `site_settings`，由前端 <code>/js/about.js</code> 渲染） |
 | `/css/*`、`/js/*` | 样式与脚本 |
 | `/assets/*` | 背景图、favicon |
 | `/?post=<username>:<id>` | 前端文章深链，打开阅读弹窗 |

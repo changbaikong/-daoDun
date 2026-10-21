@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>关于这个小站 · 刀盾的小屋</title>
+    <meta name="description" content="关于刀盾的小屋：一个用 Node.js + SQLite 搭起来的个人博客。" />
+    <meta name="theme-color" content="#070b18" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="scene" aria-hidden="true">
+      <div class="scene-bg"></div>
+      <div class="scene-stars"></div>
+      <div class="scene-glow scene-glow--a"></div>
+      <div class="scene-glow scene-glow--b"></div>
+      <div class="scene-veil"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="回到首页">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span class="brand-text" data-site="title">刀盾的小屋</span>
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-link" href="/">首页</a>
+        <a class="nav-link" href="/#feed">文章</a>
+        <a class="nav-link is-active" href="/about" aria-current="page">关于</a>
+      </nav>
+      <span class="topbar-badge">SQLite · 账号分库</span>
+    </header>
+
+    <main class="about-main">
+      <a class="back-link" href="/">← 回到首页</a>
+
+      <section class="about-card about-card--page" aria-labelledby="about-title">
+        <p class="section-kicker">About</p>
+        <h1 class="section-title" id="about-title" data-site="aboutTitle">关于这个小站</h1>
+        <div class="about-text" id="about-text">
+          <p>
+            一个用 <strong>Node.js + SQLite</strong> 搭起来的个人博客：主库登记账号，每个账号拥有独立的文章库；前端原生 HTML / CSS / JavaScript，没有构建步骤。
+          </p>
+        </div>
+        <ul class="tech-tags" id="about-tags" role="list">
+          <li>Node.js</li>
+          <li>SQLite</li>
+          <li>Vanilla JS</li>
+          <li>账号分库</li>
+          <li>零依赖</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p data-site="footer">© 2026 Jk · 用 SQLite 写下每一个字</p>
+      <p class="footer-meta">背景 2560 × 1440 (16:9) · 移动 1080 × 1920 (9:16)</p>
+    </footer>
+
+    <noscript>
+      <p class="noscript">这个页面的内容需要 JavaScript 才能从后端读取，请启用后再试。</p>
+    </noscript>
+
+    <script type="module" src="/js/about.js"></script>
+  </body>
+</html>

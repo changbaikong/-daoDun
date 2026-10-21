@@ -40,6 +40,8 @@ test('公开 API：站点、统计、Feed、账号、文章列表与详情', asy
     const site = await fetchJson(baseUrl, '/api/site');
     assert.equal(site.res.status, 200);
     assert.equal(site.data.site.title, '刀盾的小屋');
+    assert.equal(site.data.site.aboutTitle, '关于这个小站');
+    assert.ok(site.data.site.aboutTags.includes('SQLite'));
 
     const stats = await fetchJson(baseUrl, '/api/stats');
     assert.deepEqual(stats.data, { accounts: 2, articles: 3, published: 2 });
@@ -142,6 +144,19 @@ test('静态资源：首页、CSS/JS MIME、安全头、HEAD、目录穿越防�
     const js = await fetch(baseUrl + '/js/app.js');
     assert.equal(js.status, 200);
     assert.match(js.headers.get('content-type') || '', /javascript/);
+
+    // 首页只保留文章区，「关于」改为独立页面
+    assert.doesNotMatch(html, /id="about-text"/);
+    const about = await fetch(baseUrl + '/about');
+    assert.equal(about.status, 200);
+    assert.match(about.headers.get('content-type') || '', /text\/html/);
+    const aboutHtml = await about.text();
+    assert.match(aboutHtml, /id="about-text"/);
+    assert.match(aboutHtml, /\/js\/about\.js/);
+
+    const aboutJs = await fetch(baseUrl + '/js/about.js');
+    assert.equal(aboutJs.status, 200);
+    assert.match(aboutJs.headers.get('content-type') || '', /javascript/);
 
     const head = await fetch(baseUrl + '/', { method: 'HEAD' });
     assert.equal(head.status, 200);

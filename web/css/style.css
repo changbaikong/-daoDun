@@ -881,12 +881,16 @@ img {
   pointer-events: none;
 }
 
-.about-card > p {
+.about-text {
   max-width: 62em;
   margin: 0;
   color: var(--muted);
   font-size: 0.95rem;
   line-height: 1.95;
+}
+
+.about-text p {
+  margin: 0;
 }
 
 .about-card strong {
@@ -921,6 +925,57 @@ img {
   color: #cfe0ff;
   font-size: 0.77rem;
   letter-spacing: 0.04em;
+}
+
+/* ------------------------------------------------------------------
+   关于页（独立页面 /about）
+   ------------------------------------------------------------------ */
+
+.about-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(14px, 2.4vh, 22px);
+  width: min(920px, 100%);
+  min-height: calc(100svh - 64px);
+  margin: 0 auto;
+  padding: clamp(32px, 6vh, 64px) clamp(20px, 5vw, 48px) clamp(40px, 7vh, 72px);
+}
+
+.back-link {
+  align-self: flex-start;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--ink);
+}
+
+.about-card--page {
+  width: 100%;
+  padding: clamp(28px, 4vw, 48px);
+  animation: rise-in 0.8s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+.about-card--page .section-title {
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+}
+
+.about-card--page .about-text {
+  margin-top: 14px;
+  font-size: 1rem;
+}
+
+.nav-link.is-active {
+  color: var(--ink);
+}
+
+.nav-link.is-active::after {
+  right: 0;
 }
 
 /* ------------------------------------------------------------------
@@ -1355,6 +1410,12 @@ img {
     min-height: calc(100svh - 52px);
     padding-top: 20px;
     padding-bottom: clamp(24px, 5vh, 40px);
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .about-main {
+    min-height: calc(100svh - 52px);
     padding-left: 18px;
     padding-right: 18px;
   }
