@@ -494,6 +494,7 @@ function initScreenTransition() {
   const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const pageKeys = new Set(['PageDown', 'PageUp', ' ']);
   const EDGE_TOLERANCE = 8;
+  const TOP_ZONE = 24; // 内容屏顶部附近这一段用「累计一档」触发，避免轻轻一碰就翻
   let wheelAcc = 0;
   let wheelTimer = null;
 
@@ -527,25 +528,42 @@ function initScreenTransition() {
     const stageTop = measureStageTop();
     const delta =
       event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1);
-    const wantsForward = y <= EDGE_TOLERANCE && delta > 0;
-    const wantsBack = Math.abs(y - stageTop) <= EDGE_TOLERANCE && delta < 0;
 
-    if (!wantsForward && !wantsBack) {
-      resetWheelAcc();
+    // 首屏顶部向下：累计一档后整屏切到内容屏
+    if (delta > 0 && y <= EDGE_TOLERANCE) {
+      event.preventDefault();
+      wheelAcc += delta;
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(resetWheelAcc, 180);
+      if (wheelAcc >= 60) {
+        resetWheelAcc();
+        switchScreen(1);
+      }
       return;
     }
 
-    event.preventDefault();
-    wheelAcc += delta;
-    clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(resetWheelAcc, 180);
-
-    // 触控板会把滚动拆成很多小 delta，累计到 60 才切换，避免轻轻一碰就整屏跳
-    if (Math.abs(wheelAcc) >= 60) {
-      const direction = wheelAcc > 0 ? 1 : -1;
-      resetWheelAcc();
-      switchScreen(direction);
+    // 内容屏顶部向上：同样累计一档后整屏切回首屏
+    if (delta < 0 && y >= stageTop && y <= stageTop + TOP_ZONE) {
+      event.preventDefault();
+      wheelAcc += delta;
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(resetWheelAcc, 180);
+      if (wheelAcc <= -60) {
+        resetWheelAcc();
+        switchScreen(-1);
+      }
+      return;
     }
+
+    // 内容屏内一次滚动就会越过内容屏顶部时：直接整屏切回首屏
+    if (delta < 0 && y > stageTop + TOP_ZONE && y + delta < stageTop) {
+      event.preventDefault();
+      resetWheelAcc();
+      switchScreen(-1);
+      return;
+    }
+
+    resetWheelAcc();
   };
 
   window.addEventListener('wheel', onWheel, { passive: false });
@@ -564,15 +582,22 @@ function initScreenTransition() {
 
     const y = window.scrollY;
     const stageTop = measureStageTop();
+    const pageStep = window.innerHeight * 0.87;
     const forward = event.key === 'PageDown' || (event.key === ' ' && !event.shiftKey);
     const back = event.key === 'PageUp' || (event.key === ' ' && event.shiftKey);
 
-    if (y <= EDGE_TOLERANCE && forward) {
-      event.preventDefault();
-      switchScreen(1);
-    } else if (Math.abs(y - stageTop) <= EDGE_TOLERANCE && back) {
-      event.preventDefault();
-      switchScreen(-1);
+    if (forward) {
+      // 只有首屏顶部才拦截向下翻页；内容屏内保持原生翻页
+      if (y <= EDGE_TOLERANCE) {
+        event.preventDefault();
+        switchScreen(1);
+      }
+    } else if (back) {
+      // 内容屏内向上翻一页会越过内容屏顶部时，整屏切回首屏
+      if (y >= stageTop && y - pageStep < stageTop) {
+        event.preventDefault();
+        switchScreen(-1);
+      }
     }
   });
 }
