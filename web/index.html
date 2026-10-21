@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jk 的博客 · 看板娘起始页</title>
+    <meta
+      name="description"
+      content="Jk 的博客：Node.js + SQLite 搭起来的博客地基，主库登记账号、每个账号一个独立的文章库。"
+    />
+    <meta name="theme-color" content="#070b18" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#feed">跳到文章列表</a>
+
+    <div class="scene" aria-hidden="true">
+      <div class="scene-bg"></div>
+      <div class="scene-stars"></div>
+      <div class="scene-glow scene-glow--a"></div>
+      <div class="scene-glow scene-glow--b"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="回到首页">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span class="brand-text" data-site="title">Jk 的博客</span>
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-link" href="#feed">文章</a>
+        <a class="nav-link" href="#authors">作者</a>
+        <a class="nav-link" href="#about">关于</a>
+      </nav>
+      <span class="topbar-badge">SQLite · 账号分库</span>
+    </header>
+
+    <main>
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <aside class="hero-mascot" aria-label="看板娘">
+          <div class="mascot-stage">
+            <div class="mascot-halo" aria-hidden="true"></div>
+            <img
+              class="mascot-img"
+              id="mascot-img"
+              src="/assets/mascot.png"
+              alt="看板娘立绘"
+              width="1200"
+              height="1600"
+              decoding="async"
+            />
+            <div class="mascot-fallback" id="mascot-fallback" hidden>
+              <span class="mascot-fallback-title">看板娘立绘位</span>
+              <span>1200 × 1600 · 透明 PNG</span>
+              <code>web/assets/mascot.png</code>
+            </div>
+            <span class="mascot-nameplate">
+              <strong data-site="mascotName">小星</strong>
+              <em>kanban musume</em>
+            </span>
+          </div>
+        </aside>
+
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            Welcome to <span data-site="owner">Jk</span>'s corner
+          </p>
+          <h1 class="hero-title" id="hero-title" data-site="title">Jk 的博客</h1>
+          <p class="hero-greeting" id="mascot-line" aria-live="polite">……</p>
+          <p class="hero-subtitle" data-site="subtitle">
+            在代码与星光之间，写一点想写的东西。
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#feed">
+              进入博客 <span class="btn-arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="btn btn-ghost" href="#about">认识看板娘</a>
+          </div>
+          <dl class="stats" aria-label="站点数据">
+            <div class="stat">
+              <dt>作者账号</dt>
+              <dd id="stat-accounts">—</dd>
+            </div>
+            <div class="stat">
+              <dt>文章总数</dt>
+              <dd id="stat-articles">—</dd>
+            </div>
+            <div class="stat">
+              <dt>已发布</dt>
+              <dd id="stat-published">—</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="section feed-section" id="feed" aria-labelledby="feed-title">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Latest posts</p>
+            <h2 class="section-title" id="feed-title">最新文章</h2>
+          </div>
+          <p class="section-note">所有账号的已发布文章，按时间排序。</p>
+        </div>
+        <div class="filter-bar" id="filter-bar" role="group" aria-label="按账号筛选文章">
+          <button class="filter-chip is-active" type="button" data-account="">全部账号</button>
+        </div>
+        <div class="feed" id="feed-list">
+          <p class="feed-state">正在读取文章库…</p>
+        </div>
+      </section>
+
+      <section class="section authors-section" id="authors" aria-labelledby="authors-title">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Accounts</p>
+            <h2 class="section-title" id="authors-title">作者与账号库</h2>
+          </div>
+          <p class="section-note">每个账号对应一个独立的 SQLite 文章库文件。</p>
+        </div>
+        <div class="author-grid" id="author-grid"></div>
+      </section>
+
+      <section class="section about-section" id="about" aria-labelledby="about-title">
+        <div class="about-card">
+          <p class="section-kicker">About</p>
+          <h2 class="section-title" id="about-title">关于这个小站</h2>
+          <p>
+            这里是一个用 <strong>Node.js + SQLite</strong> 搭起来的博客地基。主库负责登记账号与站点配置，每个账号都拥有自己独立的文章库，互不打扰；前端是原生 HTML / CSS / JavaScript，没有构建步骤。
+          </p>
+          <ul class="tech-tags" role="list">
+            <li>Node.js</li>
+            <li>SQLite</li>
+            <li>Vanilla JS</li>
+            <li>账号分库</li>
+            <li>零依赖</li>
+          </ul>
+          <div class="about-grid">
+            <div class="about-item">
+              <h3>看板娘</h3>
+              <p>
+                <strong data-site="mascotName">小星</strong> 是这个小站的看板娘。正式立绘换成一张 <strong>1200 × 1600</strong> 的透明 PNG，放到 <code>web/assets/mascot.png</code> 即可。
+              </p>
+            </div>
+            <div class="about-item">
+              <h3>背景图</h3>
+              <p>
+                桌面用 <strong>2560 × 1440（16:9）</strong>，手机用 <strong>1080 × 1920（9:16）</strong>。现在先用一张星空占位图，替换同名文件就能生效。
+              </p>
+            </div>
+            <div class="about-item">
+              <h3>下一步</h3>
+              <p>写作界面、登录权限、评论与 RSS。现在先把地基和数据模型稳住，页面先跑起来。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p data-site="footer">© 2026 Jk · 用 SQLite 写下每一个字</p>
+      <p class="footer-meta">
+        背景 2560 × 1440 (16:9) · 移动 1080 × 1920 (9:16) · 看板娘 1200 × 1600 透明 PNG
+      </p>
+    </footer>
+
+    <div class="reader" id="reader" hidden role="dialog" aria-modal="true" aria-labelledby="reader-title">
+      <div class="reader-backdrop" data-close="reader"></div>
+      <article class="reader-panel">
+        <button class="reader-close" type="button" data-close="reader" aria-label="关闭文章">×</button>
+        <p class="reader-kicker" id="reader-kicker">Article</p>
+        <h2 class="reader-title" id="reader-title">加载中…</h2>
+        <p class="reader-meta" id="reader-meta"></p>
+        <div class="reader-body" id="reader-body"></div>
+      </article>
+    </div>
+
+    <div class="toast" id="toast" hidden role="status"></div>
+    <noscript>
+      <p class="noscript">这个页面需要 JavaScript 才能读取文章列表，请启用后再试。</p>
+    </noscript>
+
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

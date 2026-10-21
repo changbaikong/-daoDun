@@ -1,0 +1,21 @@
+# 运行时数据（主库 + 各账号文章库）
+data/
+server/data/
+
+# 依赖与缓存
+node_modules/
+tmp/
+*.log
+
+# 本地截图/调试产物（tools/ 下的无头浏览器临时目录）
+tools/.edge-*/
+tools/.chrome-*/
+tools/dom*.html
+tools/dom*.txt
+tools/shot-*.png
+tools/verify-*.png
+tools/test-shot.png
+
+# 系统文件
+.DS_Store
+Thumbs.db

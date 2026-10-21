@@ -1,0 +1,17 @@
+{
+  "name": "jk-blog",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Jk 的博客地基：Node.js + SQLite 后端（账号分库），看板娘起始页前端。",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node server/src/index.js",
+    "dev": "node --watch server/src/index.js",
+    "seed": "node server/scripts/seed.js",
+    "test": "node --test \"server/test/*.test.js\"",
+    "assets": "python tools/make_placeholder_assets.py"
+  }
+}
