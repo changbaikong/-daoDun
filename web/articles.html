@@ -12,16 +12,8 @@
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/css/style.css" />
   </head>
-  <body>
+  <body class="page-articles">
     <a class="skip-link" href="#post-list">跳到文章列表</a>
-
-    <div class="scene" aria-hidden="true">
-      <div class="scene-bg"></div>
-      <div class="scene-stars"></div>
-      <div class="scene-glow scene-glow--a"></div>
-      <div class="scene-glow scene-glow--b"></div>
-      <div class="scene-veil"></div>
-    </div>
 
     <header class="topbar">
       <a class="brand" href="/" aria-label="回到首页">
@@ -36,29 +28,44 @@
       <span class="topbar-badge">SQLite · 账号分库</span>
     </header>
 
-    <div class="content-stage content-stage--page">
-      <main class="library-main">
-        <div class="page-head">
-          <div>
-            <p class="section-kicker">All posts</p>
-            <h1 class="page-title">文章</h1>
+    <main class="articles-page">
+      <section class="articles-hero" aria-labelledby="page-title">
+        <img
+          class="articles-hero-img"
+          src="/assets/articles-hero.jpg"
+          alt=""
+          width="1280"
+          height="720"
+          decoding="async"
+          fetchpriority="high"
+        />
+        <div class="articles-hero-inner">
+          <div class="page-head">
+            <div>
+              <p class="section-kicker">All posts</p>
+              <h1 class="page-title" id="page-title">文章</h1>
+            </div>
+            <p class="page-note" id="page-note">正在读取文章库…</p>
           </div>
-          <p class="page-note" id="page-note">正在读取文章库…</p>
         </div>
+      </section>
 
-        <div class="filter-bar" id="filter-bar" role="group" aria-label="按账号筛选文章">
-          <button class="filter-chip is-active" type="button" data-account="">全部账号</button>
-        </div>
+      <section class="articles-library" aria-label="文章列表">
+        <div class="library-main library-main--opaque">
+          <div class="filter-bar" id="filter-bar" role="group" aria-label="按账号筛选文章">
+            <button class="filter-chip is-active" type="button" data-account="">全部账号</button>
+          </div>
 
-        <div class="feed library-feed" id="post-list">
-          <p class="feed-state">正在读取文章库…</p>
-        </div>
+          <div class="feed library-feed" id="post-list">
+            <p class="feed-state">正在读取文章库…</p>
+          </div>
 
-        <div class="library-more" id="library-more" hidden>
-          <button class="btn btn-ghost" type="button" id="load-more">加载更多</button>
+          <div class="library-more" id="library-more" hidden>
+            <button class="btn btn-ghost" type="button" id="load-more">加载更多</button>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
 
     <footer class="footer">
       <p data-site="footer">© 2026 Jk · 用 SQLite 写下每一个字</p>
