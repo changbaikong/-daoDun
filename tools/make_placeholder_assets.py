@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""生成博客首页的占位背景图（之后可直接用正式图替换同名文件）。
+"""生成博客首页的**占位**背景图（不会覆盖正式背景）。
 
-输出：
-  web/assets/hero-bg.jpg          2560 x 1440 (16:9)   桌面背景
-  web/assets/hero-bg-mobile.jpg   1080 x 1920 (9:16)   手机竖屏背景
+输出到 web/assets/placeholders/：
+  hero-bg.placeholder.jpg          2560 x 1440 (16:9)   桌面背景占位
+  hero-bg-mobile.placeholder.jpg   1080 x 1920 (9:16)   手机竖屏背景占位
 
-说明：首页不使用看板娘立绘；如需立绘，请参考 docs/background-spec.md 里的可选规格。
+正式背景在 web/assets/hero-bg.jpg 与 web/assets/hero-bg-mobile.jpg，
+如需使用占位图，手动把文件复制/改名过去即可。
 
 依赖：Pillow
 用法：python tools/make_placeholder_assets.py
@@ -19,7 +20,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = Path(__file__).resolve().parent.parent
-ASSETS = ROOT / "web" / "assets"
+ASSETS = ROOT / "web" / "assets" / "placeholders"
 
 NIGHT_TOP = (7, 11, 24)
 NIGHT_MID = (16, 26, 54)
@@ -232,8 +233,8 @@ def main():
         moon_radius_scale=0.055,
         star_count=650,
     )
-    desktop.save(ASSETS / "hero-bg.jpg", quality=86, optimize=True)
-    print("已生成 web/assets/hero-bg.jpg  (2560x1440, 16:9)")
+    desktop.save(ASSETS / "hero-bg.placeholder.jpg", quality=86, optimize=True)
+    print("已生成 web/assets/placeholders/hero-bg.placeholder.jpg  (2560x1440, 16:9)")
 
     mobile = make_background(
         (1080, 1920),
@@ -242,8 +243,8 @@ def main():
         moon_radius_scale=0.085,
         star_count=420,
     )
-    mobile.save(ASSETS / "hero-bg-mobile.jpg", quality=86, optimize=True)
-    print("已生成 web/assets/hero-bg-mobile.jpg  (1080x1920, 9:16)")
+    mobile.save(ASSETS / "hero-bg-mobile.placeholder.jpg", quality=86, optimize=True)
+    print("已生成 web/assets/placeholders/hero-bg-mobile.placeholder.jpg  (1080x1920, 9:16)")
 
 
 if __name__ == "__main__":

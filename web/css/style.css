@@ -121,20 +121,39 @@ img {
   inset: 0;
   background-color: #060a15;
   background-image:
-    linear-gradient(180deg, rgba(4, 7, 16, 0.42) 0%, rgba(4, 7, 16, 0.3) 38%, rgba(4, 7, 16, 0.82) 100%),
-    linear-gradient(112deg, rgba(4, 8, 18, 0.92) 0%, rgba(5, 9, 20, 0.55) 46%, rgba(5, 9, 20, 0.08) 76%),
+    linear-gradient(
+      90deg,
+      rgba(3, 6, 15, 0.94) 0%,
+      rgba(3, 6, 15, 0.86) 16%,
+      rgba(3, 6, 15, 0.56) 34%,
+      rgba(3, 6, 15, 0.22) 50%,
+      rgba(3, 6, 15, 0.04) 66%,
+      rgba(3, 6, 15, 0) 80%
+    ),
+    linear-gradient(180deg, rgba(3, 6, 15, 0.28) 0%, rgba(3, 6, 15, 0.08) 42%, rgba(3, 6, 15, 0.5) 100%),
     var(--hero-image);
   background-size: cover, cover, cover;
-  background-position: center, center, center;
+  background-position: center, center, left center;
   background-repeat: no-repeat;
 }
 
 @media (max-aspect-ratio: 4/5) {
   .scene-bg {
     background-image:
-      linear-gradient(180deg, rgba(4, 7, 16, 0.35) 0%, rgba(4, 7, 16, 0.28) 40%, rgba(4, 7, 16, 0.9) 100%),
-      linear-gradient(112deg, rgba(4, 8, 18, 0.78) 0%, rgba(5, 9, 20, 0.35) 60%, rgba(5, 9, 20, 0.1) 100%),
-      var(--hero-image);
+      linear-gradient(
+        180deg,
+        rgba(3, 6, 15, 0.05) 0%,
+        rgba(3, 6, 15, 0.12) 24%,
+        rgba(3, 6, 15, 0.4) 42%,
+        rgba(3, 6, 15, 0.78) 56%,
+        rgba(3, 6, 15, 0.93) 70%,
+        rgba(3, 6, 15, 0.98) 85%,
+        rgba(3, 6, 15, 1) 100%
+      ),
+      linear-gradient(90deg, rgba(3, 6, 15, 0.4) 0%, rgba(3, 6, 15, 0.05) 45%, rgba(3, 6, 15, 0.25) 100%),
+      url("/assets/hero-bg-mobile.jpg");
+    background-size: cover, cover, cover;
+    background-position: center, center, center;
   }
 }
 
@@ -153,7 +172,7 @@ img {
     640px 560px,
     380px 320px,
     560px 470px;
-  opacity: 0.5;
+  opacity: 0.22;
   animation: star-drift 150s linear infinite;
   -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent 88%);
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), transparent 88%);
@@ -163,7 +182,7 @@ img {
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.45;
+  opacity: 0.28;
   mix-blend-mode: screen;
   pointer-events: none;
 }
@@ -352,7 +371,7 @@ img {
 
 .hero-copy {
   width: 100%;
-  max-width: 780px;
+  max-width: 620px;
 }
 
 .hero-copy > * {
@@ -427,7 +446,7 @@ img {
 }
 
 .hero-subtitle {
-  max-width: 34em;
+  max-width: 30em;
   margin: 6px 0 34px;
   color: var(--muted);
   font-size: clamp(0.98rem, 1.3vw, 1.08rem);
@@ -1295,8 +1314,10 @@ img {
 
 @media (max-width: 1020px) {
   .hero {
-    min-height: auto;
-    padding-top: clamp(32px, 6vh, 64px);
+    align-items: flex-end;
+    min-height: calc(100svh - 72px);
+    padding-top: clamp(24px, 4vh, 48px);
+    padding-bottom: clamp(28px, 5vh, 56px);
   }
 
   .hero-copy {
@@ -1334,6 +1355,9 @@ img {
   }
 
   .hero {
+    min-height: calc(100svh - 58px);
+    padding-top: 20px;
+    padding-bottom: clamp(24px, 5vh, 40px);
     padding-left: 18px;
     padding-right: 18px;
   }

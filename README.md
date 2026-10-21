@@ -38,7 +38,7 @@ npm start
 ```powershell
 npm test          # 后端测试（node:test，9 个用例）
 npm run dev       # node --watch 模式
-npm run assets    # 重新生成占位背景图（需要 Python + Pillow）
+npm run assets    # 重新生成占位背景（输出到 web/assets/placeholders/，不会覆盖正式背景）
 ```
 
 环境变量：`PORT`、`HOST`、`BLOG_DATA_DIR`（数据目录，默认 `./data`）。
@@ -152,10 +152,10 @@ app.close();
 
 替换素材（保持同名即可生效）：
 
-| 文件 | 用途 | 规格 |
+| 文件 | 用途 | 说明 |
 | --- | --- | --- |
-| `web/assets/hero-bg.jpg` | 桌面背景 | 2560 × 1440（16:9） |
-| `web/assets/hero-bg-mobile.jpg` | 手机竖屏背景 | 1080 × 1920（9:16） |
+| `web/assets/hero-bg.jpg` | 桌面背景 | 当前为 1672 × 941（16:9）的插画；有更高清原图时建议换成 2560 × 1440 |
+| `web/assets/hero-bg-mobile.jpg` | 手机竖屏背景 | 1080 × 1920（9:16），由同一张插画裁切生成 |
 
 > 看板娘立绘当前**未使用**（已移除 AI 生成的占位立绘）。如果以后要加，参考 [docs/background-spec.md](docs/background-spec.md) 里保留的立绘规格，并恢复 hero 右侧的立绘位。
 
