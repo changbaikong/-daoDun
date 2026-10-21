@@ -20,7 +20,7 @@ test('主库初始化：版本号、默认站点配置、账号库按需创建',
     assert.ok(fs.existsSync(path.join(dataDir, 'master.db')));
 
     const site = app.services.blog.getSite();
-    assert.equal(site.title, 'Jk 的博客');
+    assert.equal(site.title, '刀盾的小屋');
     assert.ok(site.mascotName.length > 0);
     assert.ok(site.subtitle.length > 0);
 

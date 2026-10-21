@@ -2,7 +2,7 @@ import { nowIso, withTransaction } from './sqlite.js';
 
 /** 站点默认配置：首次启动时写入主库，之后可在库里改。 */
 export const DEFAULT_SITE_SETTINGS = Object.freeze({
-  title: 'Jk 的博客',
+  title: '刀盾的小屋',
   subtitle: '在代码与星光之间，写一点想写的东西。',
   description: '一个用 Node.js 和 SQLite 写成的博客，记录代码、文字与一点星光。',
   owner: 'Jk',

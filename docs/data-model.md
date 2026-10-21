@@ -52,7 +52,7 @@ data/
 
 | key | 默认值 |
 | --- | --- |
-| `title` | `Jk 的博客` |
+| `title` | `刀盾的小屋` |
 | `subtitle` | `在代码与星光之间，写一点想写的东西。` |
 | `description` | `一个用 Node.js 和 SQLite 写成的博客，记录代码、文字与一点星光。` |
 | `owner` | `Jk` |

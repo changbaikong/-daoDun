@@ -39,7 +39,7 @@ test('公开 API：站点、统计、Feed、账号、文章列表与详情', asy
 
     const site = await fetchJson(baseUrl, '/api/site');
     assert.equal(site.res.status, 200);
-    assert.equal(site.data.site.title, 'Jk 的博客');
+    assert.equal(site.data.site.title, '刀盾的小屋');
 
     const stats = await fetchJson(baseUrl, '/api/stats');
     assert.deepEqual(stats.data, { accounts: 2, articles: 3, published: 2 });
