@@ -67,56 +67,49 @@
             </div>
           </dl>
         </div>
+
+        <a class="scroll-hint" href="#feed" aria-label="向下滚动查看文章">
+          <span class="scroll-hint-text">向下滚动</span>
+          <span class="scroll-hint-arrow" aria-hidden="true">↓</span>
+        </a>
       </section>
 
-      <section class="section feed-section" id="feed" aria-labelledby="feed-title">
-        <div class="section-head">
-          <div>
-            <p class="section-kicker">Latest posts</p>
-            <h2 class="section-title" id="feed-title">最新文章</h2>
-          </div>
-          <p class="section-note">所有账号的已发布文章，按时间排序。</p>
-        </div>
-        <div class="filter-bar" id="filter-bar" role="group" aria-label="按账号筛选文章">
-          <button class="filter-chip is-active" type="button" data-account="">全部账号</button>
-        </div>
-        <div class="feed" id="feed-list">
-          <p class="feed-state">正在读取文章库…</p>
-        </div>
-      </section>
+      <div class="content-stage">
+        <div class="screen-divider" aria-hidden="true"><span>✦</span></div>
 
-      <section class="section about-section" id="about" aria-labelledby="about-title">
-        <div class="about-card">
-          <p class="section-kicker">About</p>
-          <h2 class="section-title" id="about-title">关于这个小站</h2>
-          <p>
-            这里是一个用 <strong>Node.js + SQLite</strong> 搭起来的博客地基。主库负责登记账号与站点配置，每个账号都拥有自己独立的文章库，互不打扰；前端是原生 HTML / CSS / JavaScript，没有构建步骤。
-          </p>
-          <ul class="tech-tags" role="list">
-            <li>Node.js</li>
-            <li>SQLite</li>
-            <li>Vanilla JS</li>
-            <li>账号分库</li>
-            <li>零依赖</li>
-          </ul>
-          <div class="about-grid">
-            <div class="about-item">
-              <h3>接口</h3>
-              <p>公开只读 API 已经就绪：站点配置、数据统计、跨账号 Feed、账号文章、文章详情。写接口留到下一阶段。</p>
+        <section class="section feed-section" id="feed" aria-labelledby="feed-title">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Latest posts</p>
+              <h2 class="section-title" id="feed-title">最新文章</h2>
             </div>
-            <div class="about-item">
-              <h3>背景图</h3>
-              <p>
-                桌面按 <strong>16:9</strong>、手机按 <strong>9:16</strong> 适配。当前背景是一张 1672 × 941 的插画，想在大屏上更清晰可以换成 2560 × 1440 的高清版本。
-              </p>
-            </div>
-            <div class="about-item">
-              <h3>下一步</h3>
-              <p>写作界面、登录权限、评论与 RSS。现在先把地基和数据模型稳住，页面先跑起来。</p>
-            </div>
+            <p class="section-note">所有账号的已发布文章，按时间排序。</p>
           </div>
-        </div>
-      </section>
+          <div class="filter-bar" id="filter-bar" role="group" aria-label="按账号筛选文章">
+            <button class="filter-chip is-active" type="button" data-account="">全部账号</button>
+          </div>
+          <div class="feed" id="feed-list">
+            <p class="feed-state">正在读取文章库…</p>
+          </div>
+        </section>
+
+        <section class="section about-section" id="about" aria-labelledby="about-title">
+          <div class="about-card">
+            <p class="section-kicker">About</p>
+            <h2 class="section-title" id="about-title">关于这个小站</h2>
+            <p>
+              一个用 <strong>Node.js + SQLite</strong> 搭起来的个人博客：主库登记账号，每个账号拥有独立的文章库；前端原生 HTML / CSS / JavaScript，没有构建步骤。
+            </p>
+            <ul class="tech-tags" role="list">
+              <li>Node.js</li>
+              <li>SQLite</li>
+              <li>Vanilla JS</li>
+              <li>账号分库</li>
+              <li>零依赖</li>
+            </ul>
+          </div>
+        </section>
+      </div>
     </main>
 
     <footer class="footer">
