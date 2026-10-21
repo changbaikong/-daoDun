@@ -19,3 +19,6 @@ tools/test-shot.png
 # 系统文件
 .DS_Store
 Thumbs.db
+
+# 本地启动测试临时文件
+tools/_*
