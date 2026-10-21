@@ -30,15 +30,18 @@
 
     <main class="articles-page">
       <section class="articles-hero" aria-labelledby="page-title">
-        <img
-          class="articles-hero-img"
-          src="/assets/articles-hero.jpg"
-          alt=""
-          width="1280"
-          height="720"
-          decoding="async"
-          fetchpriority="high"
-        />
+        <div class="articles-hero-backdrop" aria-hidden="true"></div>
+        <div class="articles-hero-frame">
+          <img
+            class="articles-hero-img"
+            src="/assets/articles-hero.jpg"
+            alt=""
+            width="1280"
+            height="720"
+            decoding="async"
+            fetchpriority="high"
+          />
+        </div>
         <div class="articles-hero-inner">
           <div class="page-head">
             <div>

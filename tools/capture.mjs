@@ -131,6 +131,9 @@ async function evaluate(expression) {
 
 await send('Page.enable');
 await send('Runtime.enable');
+await send('Network.enable');
+// 截图验收要看到最新文件：CSS/JS 有 max-age 缓存，这里强制不读缓存
+await send('Network.setCacheDisabled', { cacheDisabled: true });
 await send('Emulation.setDeviceMetricsOverride', {
   width,
   height,
