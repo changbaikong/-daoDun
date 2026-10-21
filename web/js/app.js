@@ -330,6 +330,9 @@ function fillReader({ article, author }) {
 
   const footer = el('div', 'reader-footer');
   footer.append(el('span', 'reader-footer-note', `数据来源：${author?.username || 'unknown'} 的独立文章库`));
+  const permalink = el('a', 'reader-footer-link', '在独立页面打开 →');
+  permalink.href = `/articles/${encodeURIComponent(author?.username || '')}/${encodeURIComponent(article.id)}`;
+  footer.append(permalink);
   body.append(footer);
 }
 

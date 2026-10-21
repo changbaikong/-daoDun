@@ -48,12 +48,26 @@ test('公开 API：站点、统计、Feed、账号、文章列表与详情', asy
 
     const feed = await fetchJson(baseUrl, '/api/feed?limit=10');
     assert.equal(feed.res.status, 200);
+    assert.equal(feed.data.total, 2);
     assert.equal(feed.data.items.length, 2);
     assert.deepEqual(
       new Set(feed.data.items.map((item) => item.title)),
       new Set(['第一篇：星光', '鲍勃的文章']),
     );
     assert.equal(feed.data.items[0].content, undefined, 'Feed 列表不应返回正文');
+
+    // 第二页：limit / offset 分页，total 用于前端判断「加载更多」
+    const firstPage = await fetchJson(baseUrl, '/api/feed?limit=1');
+    const secondPage = await fetchJson(baseUrl, '/api/feed?limit=1&offset=1');
+    assert.equal(firstPage.data.items.length, 1);
+    assert.equal(secondPage.res.status, 200);
+    assert.equal(secondPage.data.total, 2);
+    assert.equal(secondPage.data.items.length, 1);
+    assert.notEqual(firstPage.data.items[0].title, secondPage.data.items[0].title);
+
+    const emptyPage = await fetchJson(baseUrl, '/api/feed?limit=10&offset=10');
+    assert.equal(emptyPage.data.total, 2);
+    assert.equal(emptyPage.data.items.length, 0, '越界偏移返回空列表');
 
     const accounts = await fetchJson(baseUrl, '/api/accounts');
     assert.equal(accounts.data.items.length, 2);
@@ -70,6 +84,7 @@ test('公开 API：站点、统计、Feed、账号、文章列表与详情', asy
     const aliceArticles = await fetchJson(baseUrl, '/api/accounts/alice/articles');
     assert.equal(aliceArticles.data.items.length, 1, '只返回已发布文章');
     assert.equal(aliceArticles.data.items[0].id, data.star.id);
+    assert.equal(aliceArticles.data.total, 1, '账号文章列表返回已发布总数');
 
     const detail = await fetchJson(baseUrl, `/api/public/articles/alice/${data.star.id}`);
     assert.equal(detail.res.status, 200);
@@ -116,6 +131,11 @@ test('API 错误处理：404、405、OPTIONS 与参数校验', async () => {
     const badOffset = await fetchJson(baseUrl, '/api/accounts/alice/articles?offset=-1');
     assert.equal(badOffset.res.status, 422);
 
+    const badFeedLimit = await fetchJson(baseUrl, '/api/feed?limit=99');
+    assert.equal(badFeedLimit.res.status, 422);
+    const badFeedOffset = await fetchJson(baseUrl, '/api/feed?offset=-1');
+    assert.equal(badFeedOffset.res.status, 422);
+
     const badId = await fetchJson(baseUrl, '/api/public/articles/alice/not-a-number');
     assert.equal(badId.res.status, 422);
   } finally {
@@ -157,6 +177,33 @@ test('静态资源：首页、CSS/JS MIME、安全头、HEAD、目录穿越防�
     const aboutJs = await fetch(baseUrl + '/js/about.js');
     assert.equal(aboutJs.status, 200);
     assert.match(aboutJs.headers.get('content-type') || '', /javascript/);
+
+    // 第二页：文章列表 /articles（无扩展名 → articles.html，带斜杠也兼容）
+    const articlesPage = await fetch(baseUrl + '/articles');
+    assert.equal(articlesPage.status, 200);
+    assert.match(articlesPage.headers.get('content-type') || '', /text\/html/);
+    const articlesHtml = await articlesPage.text();
+    assert.match(articlesHtml, /id="post-list"/);
+    assert.match(articlesHtml, /\/js\/articles\.js/);
+
+    const articlesTrailing = await fetch(baseUrl + '/articles/');
+    assert.equal(articlesTrailing.status, 200);
+    assert.match(await articlesTrailing.text(), /id="post-list"/);
+
+    // 文章详情是独立页面：/articles/:username/:id → article.html
+    const articlePage = await fetch(baseUrl + '/articles/alice/1');
+    assert.equal(articlePage.status, 200);
+    assert.match(articlePage.headers.get('content-type') || '', /text\/html/);
+    const articleHtml = await articlePage.text();
+    assert.match(articleHtml, /id="article-body"/);
+    assert.match(articleHtml, /\/js\/article\.js/);
+
+    const articlesJs = await fetch(baseUrl + '/js/articles.js');
+    assert.equal(articlesJs.status, 200);
+    assert.match(articlesJs.headers.get('content-type') || '', /javascript/);
+    const articleJs = await fetch(baseUrl + '/js/article.js');
+    assert.equal(articleJs.status, 200);
+    assert.match(articleJs.headers.get('content-type') || '', /javascript/);
 
     const head = await fetch(baseUrl + '/', { method: 'HEAD' });
     assert.equal(head.status, 200);

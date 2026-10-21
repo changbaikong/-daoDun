@@ -66,21 +66,28 @@ export class BlogService {
   }
 
   /**
-   * 跨账号最新文章。
+   * 跨账号最新文章（分页）。
    * @param {number} [limit]
+   * @param {number} [offset]
    */
-  latest(limit = 6) {
+  latest(limit = 6, offset = 0) {
     const size = Math.min(Math.max(Number(limit) || 6, 1), 20);
+    const skip = Math.max(Number(offset) || 0, 0);
     const accounts = this.db.master.accounts.list();
     const items = [];
+    let total = 0;
+    // 每个账号取「前 offset + limit 篇」，合并排序后再切出当前页，
+    // 这样不用把所有文章都读进内存，结果也和全局排序一致。
+    const perAccount = skip + size;
     for (const account of accounts) {
       const repo = this.db.accountDbs.get(account.id).articles;
-      for (const article of repo.listPublished(size)) {
+      total += repo.count({ status: 'published' });
+      for (const article of repo.listPublished(perAccount)) {
         items.push(toArticleSummary(article, account));
       }
     }
     items.sort((a, b) => String(b.publishedAt).localeCompare(String(a.publishedAt)));
-    return { items: items.slice(0, size) };
+    return { total, items: items.slice(skip, skip + size) };
   }
 
   /** 所有账号 + 各自的文章统计。 */
@@ -112,12 +119,14 @@ export class BlogService {
     const items = repo
       .list({ status: 'published', limit, offset })
       .items.map((article) => toArticleSummary(article, account));
+    const total = repo.count({ status: 'published' });
     return {
       account: {
         ...toAuthor(account),
         bio: account.bio,
-        stats: { articles: repo.count(), published: repo.count({ status: 'published' }) },
+        stats: { articles: repo.count(), published: total },
       },
+      total,
       items,
     };
   }

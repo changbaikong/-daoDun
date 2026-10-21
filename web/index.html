@@ -29,7 +29,8 @@
         <span class="brand-text" data-site="title">刀盾的小屋</span>
       </a>
       <nav class="nav" aria-label="主导航">
-        <a class="nav-link" href="#feed">文章</a>
+        <a class="nav-link is-active" href="/" aria-current="page">首页</a>
+        <a class="nav-link" href="/articles">文章</a>
         <a class="nav-link" href="/about">关于</a>
       </nav>
       <span class="topbar-badge">SQLite · 账号分库</span>
@@ -48,7 +49,7 @@
             在代码与星光之间，写一点想写的东西。
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#feed">
+            <a class="btn btn-primary" href="/articles">
               进入博客 <span class="btn-arrow" aria-hidden="true">→</span>
             </a>
             <a class="btn btn-ghost" href="/about">关于小站</a>
@@ -84,7 +85,10 @@
               <p class="section-kicker">Latest posts</p>
               <h2 class="section-title" id="feed-title">最新文章</h2>
             </div>
-            <p class="section-note">所有账号的已发布文章，按时间排序。</p>
+            <div class="section-side">
+              <p class="section-note">所有账号的已发布文章，按时间排序。</p>
+              <a class="section-link" href="/articles">查看全部文章 <span aria-hidden="true">→</span></a>
+            </div>
           </div>
           <div class="filter-bar" id="filter-bar" role="group" aria-label="按账号筛选文章">
             <button class="filter-chip is-active" type="button" data-account="">全部账号</button>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>文章 · 刀盾的小屋</title>
+    <meta name="description" content="在刀盾的小屋里读一篇文章。" />
+    <meta name="theme-color" content="#070b18" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#article-body">跳到文章正文</a>
+
+    <div class="scene" aria-hidden="true">
+      <div class="scene-bg"></div>
+      <div class="scene-stars"></div>
+      <div class="scene-glow scene-glow--a"></div>
+      <div class="scene-glow scene-glow--b"></div>
+      <div class="scene-veil"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="回到首页">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span class="brand-text" data-site="title">刀盾的小屋</span>
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a class="nav-link" href="/">首页</a>
+        <a class="nav-link is-active" href="/articles" aria-current="page">文章</a>
+        <a class="nav-link" href="/about">关于</a>
+      </nav>
+      <span class="topbar-badge">SQLite · 账号分库</span>
+    </header>
+
+    <div class="content-stage content-stage--page">
+      <main class="article-main">
+        <a class="back-link" href="/articles">← 返回文章列表</a>
+
+        <article class="article-page" aria-labelledby="article-title">
+          <p class="reader-kicker" id="article-kicker">Article</p>
+          <h1 class="article-title" id="article-title">正在打开文章…</h1>
+          <p class="reader-meta" id="article-meta"></p>
+          <div class="reader-body article-body" id="article-body">
+            <p class="reader-loading">正在从账号库里取回文章…</p>
+          </div>
+          <div class="article-foot" id="article-foot" hidden>
+            <span class="reader-footer-note" id="article-source"></span>
+            <a class="reader-footer-link" href="/articles">继续浏览其他文章 →</a>
+          </div>
+        </article>
+
+        <a class="back-link back-link--bottom" href="/articles">← 返回文章列表</a>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <p data-site="footer">© 2026 Jk · 用 SQLite 写下每一个字</p>
+      <p class="footer-meta">文章详情 · 正文来自作者自己的账号库</p>
+    </footer>
+
+    <noscript>
+      <p class="noscript">这个页面需要 JavaScript 才能读取文章正文，请启用后再试。</p>
+    </noscript>
+
+    <script type="module" src="/js/article.js"></script>
+  </body>
+</html>

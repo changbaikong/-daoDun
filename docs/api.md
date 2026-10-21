@@ -65,13 +65,15 @@
 { "accounts": 2, "articles": 5, "published": 4 }
 ```
 
-## GET /api/feed?limit=8
+## GET /api/feed?limit=8&offset=0
 
 跨账号的最新已发布文章，按 `publishedAt` 倒序；**不返回正文**，带 `excerpt` 供卡片展示。
-`limit` 范围 1–20，默认 6。
+`limit` 范围 1–20（默认 6），`offset` 为偏移量（默认 0）。
+`total` 是所有账号的已发布文章总数，前端用「已加载数量 < total」判断是否还有下一页。
 
 ```json
 {
+  "total": 4,
   "items": [
     {
       "id": 2,
@@ -137,10 +139,12 @@
 ## GET /api/accounts/:username/articles?limit=12&offset=0
 
 只返回该账号**已发布**的文章；`limit` 1–50，默认 10。
+`total` 是该账号的已发布文章总数（和跨账号 Feed 一样，用于分页判断）。
 
 ```json
 {
   "account": { "...": "同上" },
+  "total": 1,
   "items": [ { "id": 1, "title": "看板娘的第一封信", "tags": ["随笔"], "author": { "...": "" } } ]
 }
 ```
@@ -173,18 +177,21 @@
 
 | 路径 | 说明 |
 | --- | --- |
-| `/` | 看板娘起始页（看板娘以文字问候出现，无立绘） |
+| `/` | 看板娘起始页（首屏问候 + 数据统计，向下滚动看最新文章） |
+| `/articles` | 第二页：文章列表（跨账号 Feed、按账号筛选、加载更多） |
+| `/articles/:username/:id` | 文章独立阅读页；`id` 是账号库内 ID，所以要带 `username` |
 | `/about` | 关于页（标题 / 正文 / 标签来自主库 `site_settings`，由前端 <code>/js/about.js</code> 渲染） |
 | `/css/*`、`/js/*` | 样式与脚本 |
 | `/assets/*` | 背景图、favicon |
-| `/?post=<username>:<id>` | 前端文章深链，打开阅读弹窗 |
-| 无扩展名路径 | 回退 `index.html`（方便以后加独立页面） |
+| `/?post=<username>:<id>` | 首页文章深链，直接打开阅读弹窗（弹窗里也可以跳到独立页面） |
+| 无扩展名路径 | 先找同名 `.html`，再回退 `index.html`；`/articles/<账号>/<id>` 由 `PAGE_ROUTES` 映射到 `article.html` |
 
 ## 示例
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:4173/api/stats
 Invoke-RestMethod "http://127.0.0.1:4173/api/feed?limit=4"
+Invoke-RestMethod "http://127.0.0.1:4173/api/feed?limit=2&offset=2"
 Invoke-RestMethod http://127.0.0.1:4173/api/public/articles/xiaoxing/1
 ```
 

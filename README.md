@@ -1,6 +1,6 @@
 # 刀盾的小屋
 
-一个从零搭起来的博客地基：**看板娘起始页（前端）+ Node.js / SQLite 后端库**。
+一个从零搭起来的博客：**看板娘起始页 + 第二页文章列表 / 文章页（原生前端）+ Node.js / SQLite 后端库**。
 
 当前阶段刻意保持简单：
 
@@ -11,15 +11,19 @@
 
 ## 预览
 
-| 看板娘起始页 | 文章列表 + 账号筛选 |
+| 看板娘起始页 | 最新文章（首页第二屏） |
 | --- | --- |
-| ![首页](docs/preview/home-desktop.png) | ![文章](docs/preview/feed.png) |
+| ![首页](docs/preview/home-desktop.png) | ![最新文章](docs/preview/feed.png) |
 
-| 阅读弹窗 | 关于页 |
+| 第二页：文章列表 | 文章独立页面 |
+| --- | --- |
+| ![文章列表](docs/preview/articles.png) | ![文章详情](docs/preview/article.png) |
+
+| 阅读弹窗（可跳到独立页面） | 关于页 |
 | --- | --- |
 | ![阅读](docs/preview/reader.png) | ![关于](docs/preview/about.png) |
 
-手机端：![手机](docs/preview/home-mobile.png)
+手机端：![首页手机](docs/preview/home-mobile.png) ![文章列表手机](docs/preview/articles-mobile.png)
 
 ## 快速开始
 
@@ -37,6 +41,8 @@ npm start
 ```
 
 然后在浏览器打开 <http://127.0.0.1:4173/>。
+
+首页是起始页（首屏问候 / 数据统计，向下滚动看最新文章）；点「进入博客」或顶部「文章」进入**第二页** <http://127.0.0.1:4173/articles>，那一页专门放文章列表，点任意文章卡片会跳到独立的文章页面。
 
 > 这是一个本地运行的网站：服务没启动时，地址是打不开的。端口被占用时可以换端口启动：`$env:PORT=4180; npm start`。
 
@@ -70,10 +76,12 @@ Jk/
 │  ├─ scripts/seed.js          # 种子数据
 │  └─ test/                    # node:test 测试
 ├─ web/                        # 前端（纯静态）
-│  ├─ index.html               # 首页（两屏）
+│  ├─ index.html               # 首页（两屏：起始页 + 最新文章）
+│  ├─ articles.html            # 第二页：文章列表（/articles）
+│  ├─ article.html             # 文章独立页面（/articles/<账号>/<id>）
 │  ├─ about.html               # 关于页
 │  ├─ css/style.css
-│  ├─ js/                      # api / markdown / app / about
+│  ├─ js/                      # api / markdown / app / articles / article / about
 │  └─ assets/                  # 背景图、favicon
 ├─ data/                       # 运行时数据库（git 忽略）
 ├─ docs/
@@ -139,11 +147,11 @@ app.services.articles.create(account.id, {
   status: 'published',
 });
 
-console.log(app.services.blog.latest(6)); // 首页 Feed 用的聚合查询
+console.log(app.services.blog.latest(6)); // 首页 Feed 用的聚合查询（第二页用 latest(limit, offset) 分页）
 app.close();
 ```
 
-`BlogService` 提供只读聚合：`getSite()`、`getStats()`、`latest(limit)`、`listAccounts()`、`accountArticles(username)`、`publicArticle(username, id)`。
+`BlogService` 提供只读聚合：`getSite()`、`getStats()`、`latest(limit, offset)`、`listAccounts()`、`accountArticles(username)`、`publicArticle(username, id)`。
 `ArticleRepository` / `AccountRepository` 提供底层 CRUD。
 
 ## HTTP API（只读）
@@ -153,10 +161,10 @@ app.close();
 | GET | `/api/health` | 健康检查 |
 | GET | `/api/site` | 站点配置（标题 / 副标题 / 看板娘名字等） |
 | GET | `/api/stats` | 账号数 / 文章数 / 已发布数 |
-| GET | `/api/feed?limit=8` | 跨账号最新已发布文章 |
+| GET | `/api/feed?limit=8&offset=0` | 跨账号最新已发布文章（返回 `total`，支持分页） |
 | GET | `/api/accounts` | 账号列表 + 各自文章统计 |
 | GET | `/api/accounts/:username` | 单个账号信息 |
-| GET | `/api/accounts/:username/articles?limit=&offset=` | 某账号已发布文章 |
+| GET | `/api/accounts/:username/articles?limit=&offset=` | 某账号已发布文章（返回 `total`） |
 | GET | `/api/public/articles/:username/:id` | 公开阅读单篇（已发布），阅读量 +1 |
 
 错误统一为 `{ "error": { "code", "message", "details" } }`。详见 [docs/api.md](docs/api.md)。
@@ -169,9 +177,12 @@ app.close();
   - 顶部导航锚点用带缓动的时间曲线滚动，不再和浏览器默认平滑滚动叠加；用户中途滚轮 / 触摸可随时打断。
   - 触屏设备保留原生滚动；系统开启「减少动态效果」(`prefers-reduced-motion`) 时改为瞬时跳转、不做整屏拦截。
 - **关于页**：独立页面 `/about`，标题 / 正文 / 技术标签都存在主库 `site_settings` 里，由 `/js/about.js` 从 `/api/site` 读取渲染；首页不再显示关于区块。
-- **最新文章**：跨账号 Feed；顶部胶囊可按账号筛选，对应「分库」结构。
-- **阅读弹窗**：点击文章卡片，从对应账号库取回正文；内置一个安全的极简 Markdown 渲染器（先整体转义，再渲染）。
-- **文章深链**：`/?post=xiaoxing:1` 可直接打开某篇文章。
+- **顶部导航**：首页 / 文章 / 关于；「文章」进入第二页 `/articles`。
+- **首页最新文章**：跨账号 Feed；顶部胶囊可按账号筛选，对应「分库」结构；右上角「查看全部文章」进入第二页。
+- **第二页（文章列表）**：`/articles`，专门放文章——跨账号分页列表 + 账号筛选胶囊 + 「加载更多」；筛选条件会写进 `?account=<账号>`，方便分享；每张卡片整张可点，跳到独立文章页。
+- **文章独立页面**：`/articles/<账号>/<id>`（`id` 是账号库内 ID，所以要带账号名），直接渲染 Markdown 正文、作者、日期、阅读数和标签；文章不存在 / 未发布时显示错误态和返回入口。
+- **阅读弹窗**：首页卡片仍然打开弹窗快速预览（内置安全的极简 Markdown 渲染器：先整体转义，再渲染）；弹窗底部有「在独立页面打开」可跳到文章页。
+- **文章深链**：`/?post=xiaoxing:1` 在首页直接打开阅读弹窗；`/articles/xiaoxing/1` 则是可分享的独立文章页面。
 
 替换素材（保持同名即可生效）：
 
@@ -190,19 +201,21 @@ app.close();
 npm test
 ```
 
-覆盖：主库/账号库 schema 与版本、账号隔离、文章 CRUD、slug 唯一、发布状态、阅读量、输入校验、账号删除连带删库、HTTP 只读接口、静态资源与目录穿越防护。
+覆盖：主库/账号库 schema 与版本、账号隔离、文章 CRUD、slug 唯一、发布状态、阅读量、输入校验、账号删除连带删库、HTTP 只读接口（含 Feed 分页 `offset` / `total` 与校验）、静态页面路由（`/articles`、`/articles/:username/:id`）、静态资源与目录穿越防护。
 
 页面验收截图在 `docs/preview/`，由 `tools/capture.mjs`（Chrome DevTools Protocol）生成，可复用：
 
 ```powershell
 # 先起服务，再用带 --remote-debugging-port 的 Edge/Chrome 打开 about:blank，然后：
 node tools/capture.mjs "docs/preview/feed.png" "http://127.0.0.1:4173/" --scroll="#feed"
+node tools/capture.mjs "docs/preview/articles.png" "http://127.0.0.1:4173/articles"
+node tools/capture.mjs "docs/preview/article.png" "http://127.0.0.1:4173/articles/jk/1"
 ```
 
 ## 下一步
 
 1. 写作界面 + 写接口（`POST/PATCH/DELETE /api/articles`），沿用现有 `ArticleService`。
 2. 登录 / 权限（届时主库账号表加密码或接第三方登录；文章库结构不用动）。
-3. 文章详情独立页面 / SEO / RSS。
+3. SEO / RSS / sitemap（文章独立页已有真实 URL，下一步补 `title` / `meta` 的服务端渲染与订阅源）。
 4. 分类、标签页、全文检索（SQLite FTS5）。
 5. 评论、图片上传与图床。

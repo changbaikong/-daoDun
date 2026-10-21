@@ -31,6 +31,15 @@ function isInside(parent, target) {
   return relative !== '' && !relative.startsWith('..') && !path.isAbsolute(relative);
 }
 
+/**
+ * 前端页面路由：深层路径（带参数、没有扩展名）映射到具体 HTML 文件。
+ * 纯静态前端没有服务端渲染，页面级路由集中登记在这里，避免深层链接
+ * 落回首页。`/articles` 这种一级路径由无扩展名回退自动命中 articles.html。
+ */
+const PAGE_ROUTES = [
+  { pattern: /^\/articles\/[^/]+\/[^/]+$/, file: '/article.html' },
+];
+
 function decodePath(pathname) {
   try {
     return decodeURIComponent(pathname);
@@ -42,20 +51,25 @@ function decodePath(pathname) {
 /**
  * 静态文件服务：托管 web/ 目录。
  * - 目录 / 无扩展名路径回退 index.html（方便以后加页面路由）；
+ * - 深层页面路径按 PAGE_ROUTES 映射到独立页面；
  * - 带扩展名的资源找不到就 404；
  * - 防止 ../ 路径穿越。
  */
 export async function serveStatic({ webDir, pathname, req, res }) {
-  const decoded = decodePath(pathname).replace(/\/{2,}/g, '/');
+  let decoded = decodePath(pathname).replace(/\/{2,}/g, '/');
+  // /articles/ 与 /articles 等价（根路径 / 除外）
+  if (decoded.length > 1 && decoded.endsWith('/')) decoded = decoded.replace(/\/+$/, '');
 
   const candidates = [];
   if (decoded === '/' || decoded === '') {
     candidates.push('/index.html');
   } else {
+    const pageRoute = PAGE_ROUTES.find((route) => route.pattern.test(decoded));
+    if (pageRoute) candidates.push(pageRoute.file);
     candidates.push(decoded);
     if (!path.extname(decoded)) {
       candidates.push(`${decoded}.html`);
-      if (!decoded.startsWith('/assets/')) candidates.push('/index.html');
+      if (!pageRoute && !decoded.startsWith('/assets/')) candidates.push('/index.html');
     }
   }
 

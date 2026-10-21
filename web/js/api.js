@@ -34,8 +34,9 @@ export function getStats() {
   return request('/api/stats');
 }
 
-export function getFeed(limit = 8) {
-  return request(`/api/feed?limit=${encodeURIComponent(limit)}`);
+export function getFeed(limit = 8, offset = 0) {
+  const query = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  return request(`/api/feed?${query}`);
 }
 
 export function getAccounts() {

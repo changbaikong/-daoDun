@@ -1,4 +1,5 @@
 import { Router } from '../lib/http.js';
+import { readInt } from '../lib/validate.js';
 
 /**
  * 公开只读 API。当前阶段没有登录/注册，因此不暴露写接口；
@@ -20,9 +21,10 @@ export function buildRouter({ services }) {
   router.get('/api/stats', () => services.blog.getStats());
 
   router.get('/api/feed', (ctx) => {
-    const raw = ctx.query.get('limit');
-    const limit = raw === null ? 6 : Number(raw);
-    return services.blog.latest(limit);
+    const query = Object.fromEntries(ctx.query);
+    const limit = readInt(query, 'limit', { label: '每页数量', min: 1, max: 20, defaultValue: 6 });
+    const offset = readInt(query, 'offset', { label: '偏移量', min: 0, max: 10_000, defaultValue: 0 });
+    return services.blog.latest(limit, offset);
   });
 
   router.get('/api/accounts', () => ({ items: services.blog.listAccounts() }));

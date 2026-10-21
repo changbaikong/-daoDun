@@ -979,6 +979,235 @@ img {
 }
 
 /* ------------------------------------------------------------------
+   第二页：文章列表 /articles
+   ------------------------------------------------------------------ */
+
+.content-stage--page {
+  min-height: calc(100svh - 64px);
+  background:
+    radial-gradient(1100px 320px at 50% -60px, rgba(88, 122, 210, 0.2), transparent 72%),
+    linear-gradient(
+      180deg,
+      rgba(4, 7, 16, 0.5) 0%,
+      rgba(4, 7, 16, 0.84) 14%,
+      rgba(4, 7, 16, 0.94) 34%,
+      rgba(4, 7, 16, 0.97) 100%
+    );
+}
+
+.library-main {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: clamp(38px, 7vh, 72px) clamp(20px, 5vw, 48px) clamp(52px, 9vh, 92px);
+}
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: clamp(22px, 4vh, 34px);
+  animation: rise-in 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+.page-head .section-kicker {
+  margin-bottom: 8px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  background: linear-gradient(115deg, #ffffff 10%, #dbe6ff 40%, #9db8ff 70%, #c7a9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 10px 34px rgba(88, 120, 255, 0.16));
+}
+
+.page-note {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.post-card--link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.library-feed .post-card {
+  animation: rise-in 0.6s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+.library-feed .post-card:nth-child(2) {
+  animation-delay: 0.04s;
+}
+
+.library-feed .post-card:nth-child(3) {
+  animation-delay: 0.08s;
+}
+
+.library-feed .post-card:nth-child(4) {
+  animation-delay: 0.12s;
+}
+
+.library-feed .post-card:nth-child(5) {
+  animation-delay: 0.16s;
+}
+
+.library-feed .post-card:nth-child(6) {
+  animation-delay: 0.2s;
+}
+
+.library-feed .post-card:nth-child(n + 7) {
+  animation-delay: 0.24s;
+}
+
+.post-open--static {
+  color: var(--accent);
+  font-size: 0.79rem;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.post-card:hover .post-open--static {
+  color: #dbe7ff;
+  transform: translateX(2px);
+}
+
+.library-more {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(26px, 4vh, 40px);
+}
+
+.library-more[hidden] {
+  display: none;
+}
+
+.library-more .btn[disabled] {
+  opacity: 0.55;
+  cursor: progress;
+  transform: none;
+}
+
+/* 首页「最新文章」右侧的「查看全部」入口 */
+
+.section-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.section-link {
+  color: var(--accent);
+  font-size: 0.84rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.section-link span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.section-link:hover {
+  color: #dbe7ff;
+}
+
+.section-link:hover span {
+  transform: translateX(3px);
+}
+
+/* ------------------------------------------------------------------
+   文章详情页 /articles/<账号>/<文章 ID>
+   ------------------------------------------------------------------ */
+
+.article-main {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2.4vh, 20px);
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: clamp(32px, 6vh, 60px) clamp(20px, 5vw, 48px) clamp(48px, 8vh, 84px);
+}
+
+.article-page {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(26px, 4vw, 52px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, rgba(20, 30, 60, 0.74), rgba(8, 13, 27, 0.9));
+  box-shadow: 0 26px 70px rgba(2, 6, 16, 0.5);
+  backdrop-filter: blur(14px);
+  animation: rise-in 0.75s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+.article-page::before {
+  content: "✦";
+  position: absolute;
+  top: 2%;
+  right: 5%;
+  color: rgba(160, 190, 255, 0.05);
+  font-size: clamp(90px, 14vw, 180px);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.article-page .reader-kicker,
+.article-title,
+.article-page .reader-meta,
+.article-body,
+.article-foot {
+  position: relative;
+  z-index: 1;
+}
+
+.article-title {
+  margin: 0 0 16px;
+  color: #ffffff;
+  font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  overflow-wrap: anywhere;
+}
+
+.article-page .reader-meta {
+  margin-bottom: 28px;
+}
+
+.article-body {
+  font-size: 1rem;
+}
+
+.article-body > :first-child {
+  margin-top: 0;
+}
+
+.article-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 18px;
+  border-top: 1px dashed rgba(148, 170, 220, 0.18);
+}
+
+.back-link--bottom {
+  align-self: flex-start;
+}
+
+/* ------------------------------------------------------------------
    页脚
    ------------------------------------------------------------------ */
 
@@ -1232,6 +1461,11 @@ img {
 }
 
 .reader-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 34px;
   padding-top: 18px;
   border-top: 1px dashed rgba(148, 170, 220, 0.18);
@@ -1241,6 +1475,20 @@ img {
   color: rgba(154, 167, 199, 0.6);
   font-size: 0.73rem;
   letter-spacing: 0.04em;
+}
+
+.reader-footer-link {
+  color: var(--accent);
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.reader-footer-link:hover {
+  color: #dbe7ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* ------------------------------------------------------------------
@@ -1449,6 +1697,44 @@ img {
   .filter-chip {
     padding: 7px 14px;
     font-size: 0.82rem;
+  }
+
+  .content-stage--page {
+    min-height: calc(100svh - 52px);
+  }
+
+  .library-main {
+    padding: 28px 18px 52px;
+  }
+
+  .page-head {
+    align-items: flex-start;
+  }
+
+  .page-note {
+    font-size: 0.82rem;
+  }
+
+  .section-side {
+    align-items: flex-start;
+  }
+
+  .article-main {
+    padding: 26px 18px 52px;
+  }
+
+  .article-page {
+    padding: 24px 18px 30px;
+    border-radius: 18px;
+  }
+
+  .article-title {
+    font-size: 1.55rem;
+  }
+
+  .article-foot {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .reader {
