@@ -60,6 +60,8 @@ data/
 | `mascotLine` | `欢迎回来，今天也一起写点什么吧～` |
 | `footer` | `© 2026 Jk · 用 SQLite 写下每一个字` |
 
+> `mascotName` / `mascotLine` 仍然保留：首页的打字机问候使用 `mascotLine`（文字看板娘）；原先 AI 生成的占位立绘已按需求从页面移除，配置字段留着方便以后扩展。
+
 ## 账号库 `accounts/account-<id>.db`
 
 ### articles

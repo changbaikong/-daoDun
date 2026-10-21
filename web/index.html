@@ -37,37 +37,13 @@
 
     <main>
       <section class="hero" id="top" aria-labelledby="hero-title">
-        <aside class="hero-mascot" aria-label="看板娘">
-          <div class="mascot-stage">
-            <div class="mascot-halo" aria-hidden="true"></div>
-            <img
-              class="mascot-img"
-              id="mascot-img"
-              src="/assets/mascot.png"
-              alt="看板娘立绘"
-              width="1200"
-              height="1600"
-              decoding="async"
-            />
-            <div class="mascot-fallback" id="mascot-fallback" hidden>
-              <span class="mascot-fallback-title">看板娘立绘位</span>
-              <span>1200 × 1600 · 透明 PNG</span>
-              <code>web/assets/mascot.png</code>
-            </div>
-            <span class="mascot-nameplate">
-              <strong data-site="mascotName">小星</strong>
-              <em>kanban musume</em>
-            </span>
-          </div>
-        </aside>
-
         <div class="hero-copy">
           <p class="eyebrow">
             <span class="eyebrow-dot" aria-hidden="true"></span>
             Welcome to <span data-site="owner">Jk</span>'s corner
           </p>
           <h1 class="hero-title" id="hero-title" data-site="title">Jk 的博客</h1>
-          <p class="hero-greeting" id="mascot-line" aria-live="polite">……</p>
+          <p class="hero-greeting" id="hero-greeting" aria-live="polite">……</p>
           <p class="hero-subtitle" data-site="subtitle">
             在代码与星光之间，写一点想写的东西。
           </p>
@@ -75,7 +51,7 @@
             <a class="btn btn-primary" href="#feed">
               进入博客 <span class="btn-arrow" aria-hidden="true">→</span>
             </a>
-            <a class="btn btn-ghost" href="#about">认识看板娘</a>
+            <a class="btn btn-ghost" href="#about">关于小站</a>
           </div>
           <dl class="stats" aria-label="站点数据">
             <div class="stat">
@@ -137,10 +113,8 @@
           </ul>
           <div class="about-grid">
             <div class="about-item">
-              <h3>看板娘</h3>
-              <p>
-                <strong data-site="mascotName">小星</strong> 是这个小站的看板娘。正式立绘换成一张 <strong>1200 × 1600</strong> 的透明 PNG，放到 <code>web/assets/mascot.png</code> 即可。
-              </p>
+              <h3>接口</h3>
+              <p>公开只读 API 已经就绪：站点配置、数据统计、跨账号 Feed、账号文章、文章详情。写接口留到下一阶段。</p>
             </div>
             <div class="about-item">
               <h3>背景图</h3>
@@ -159,9 +133,7 @@
 
     <footer class="footer">
       <p data-site="footer">© 2026 Jk · 用 SQLite 写下每一个字</p>
-      <p class="footer-meta">
-        背景 2560 × 1440 (16:9) · 移动 1080 × 1920 (9:16) · 看板娘 1200 × 1600 透明 PNG
-      </p>
+      <p class="footer-meta">背景 2560 × 1440 (16:9) · 移动 1080 × 1920 (9:16)</p>
     </footer>
 
     <div class="reader" id="reader" hidden role="dialog" aria-modal="true" aria-labelledby="reader-title">

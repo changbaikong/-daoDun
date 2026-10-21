@@ -38,7 +38,7 @@ npm start
 ```powershell
 npm test          # 后端测试（node:test，9 个用例）
 npm run dev       # node --watch 模式
-npm run assets    # 重新生成占位背景 / 看板娘（需要 Python + Pillow）
+npm run assets    # 重新生成占位背景图（需要 Python + Pillow）
 ```
 
 环境变量：`PORT`、`HOST`、`BLOG_DATA_DIR`（数据目录，默认 `./data`）。
@@ -66,12 +66,12 @@ Jk/
 │  ├─ index.html
 │  ├─ css/style.css
 │  ├─ js/                      # api / markdown / app
-│  └─ assets/                  # 背景图、看板娘、favicon
+│  └─ assets/                  # 背景图、favicon
 ├─ data/                       # 运行时数据库（git 忽略）
 ├─ docs/
 │  ├─ data-model.md            # 数据库设计
 │  ├─ api.md                   # HTTP API
-│  ├─ background-spec.md       # ★ 背景图 / 立绘规格
+│  ├─ background-spec.md       # ★ 背景图规格（含可选立绘说明）
 │  └─ preview/                 # 页面截图
 └─ tools/
    ├─ make_placeholder_assets.py  # 生成占位素材
@@ -144,7 +144,7 @@ app.close();
 
 ## 前端说明
 
-- **看板娘起始页**：全屏星空背景 + 看板娘立绘 + 站点标题 + 打字机问候 + 数据统计。
+- **看板娘起始页**：全屏星空背景 + 站点标题 + 打字机问候 + 数据统计。看板娘目前以文字问候的形式出场，首页不放立绘。
 - **最新文章**：跨账号 Feed；顶部胶囊可按账号筛选，对应「分库」结构。
 - **作者与账号库**：展示每个账号及其 `accounts/account-N.db` 文件，可直接跳到该账号的文章。
 - **阅读弹窗**：点击文章卡片，从对应账号库取回正文；内置一个安全的极简 Markdown 渲染器（先整体转义，再渲染）。
@@ -156,7 +156,8 @@ app.close();
 | --- | --- | --- |
 | `web/assets/hero-bg.jpg` | 桌面背景 | 2560 × 1440（16:9） |
 | `web/assets/hero-bg-mobile.jpg` | 手机竖屏背景 | 1080 × 1920（9:16） |
-| `web/assets/mascot.png` | 看板娘立绘 | 1200 × 1600（3:4），透明 PNG |
+
+> 看板娘立绘当前**未使用**（已移除 AI 生成的占位立绘）。如果以后要加，参考 [docs/background-spec.md](docs/background-spec.md) 里保留的立绘规格，并恢复 hero 右侧的立绘位。
 
 详细要求（安全区、格式、体积、构图建议）见 [docs/background-spec.md](docs/background-spec.md)。
 

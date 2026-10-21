@@ -11,7 +11,7 @@ import { renderMarkdown } from './markdown.js';
 const FALLBACK_GREETINGS = [
   '欢迎回来，今天也一起写点什么吧～',
   '文章都好好地躺在各自的账号库里。',
-  '背景图换好之后，我会站得更稳一点。',
+  '有想写的东西，随时丢进账号库里。',
 ];
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -115,7 +115,7 @@ function renderStats(stats) {
 }
 
 function startGreeting() {
-  const line = $('#mascot-line');
+  const line = $('#hero-greeting');
   if (!line) return;
   const siteLine = state.site?.mascotLine;
   state.greetingLines = [siteLine, ...FALLBACK_GREETINGS.filter((item) => item && item !== siteLine)].filter(Boolean);
@@ -147,24 +147,6 @@ function typeText(node, text) {
     node.textContent = text.slice(0, index);
     if (index >= text.length) clearInterval(state.typingTimer);
   }, 55);
-}
-
-/* ------------------------------------------------------------------ */
-/* 看板娘立绘加载失败时的占位                                            */
-/* ------------------------------------------------------------------ */
-
-function setupMascotFallback() {
-  const image = $('#mascot-img');
-  const fallback = $('#mascot-fallback');
-  if (!image || !fallback) return;
-
-  const showFallback = () => {
-    image.hidden = true;
-    fallback.hidden = false;
-  };
-
-  image.addEventListener('error', showFallback);
-  if (image.complete && image.naturalWidth === 0) showFallback();
 }
 
 /* ------------------------------------------------------------------ */
@@ -464,7 +446,6 @@ function wireEvents() {
 
 async function boot() {
   wireEvents();
-  setupMascotFallback();
 
   const [siteResult, statsResult, accountsResult] = await Promise.allSettled([
     getSite(),
