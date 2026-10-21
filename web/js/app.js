@@ -177,50 +177,6 @@ function syncFilterState() {
   }
 }
 
-function renderAuthors() {
-  const grid = $('#author-grid');
-  if (!grid) return;
-  grid.replaceChildren();
-
-  if (state.accounts.length === 0) {
-    grid.append(el('p', 'feed-state', '主库里还没有账号。运行 npm run seed 可以写入演示账号与文章。'));
-    return;
-  }
-
-  for (const account of state.accounts) {
-    const card = el('article', 'author-card');
-    card.dataset.username = account.username;
-
-    const head = el('div', 'author-head');
-    const avatar = el('span', 'author-avatar', initialOf(account.nickname || account.username));
-    const identity = el('div', 'author-identity');
-    const name = el('h3', 'author-name');
-    name.append(document.createTextNode(account.nickname || account.username));
-    const handle = el('span', 'author-handle', `@${account.username}`);
-    name.append(handle);
-    identity.append(name);
-    identity.append(el('p', 'author-bio', account.bio || '这个作者还没有写简介。'));
-    head.append(avatar, identity);
-
-    const stats = el('dl', 'author-stats');
-    const articleStat = el('div');
-    articleStat.append(el('dt', undefined, '文章'), el('dd', undefined, String(account.stats?.articles ?? 0)));
-    const publishedStat = el('div');
-    publishedStat.append(el('dt', undefined, '已发布'), el('dd', undefined, String(account.stats?.published ?? 0)));
-    stats.append(articleStat, publishedStat);
-
-    const foot = el('div', 'author-foot');
-    const file = el('code', 'author-file', `accounts/account-${account.id}.db`);
-    const button = el('button', 'btn btn-ghost btn-sm', '查看文章');
-    button.type = 'button';
-    button.dataset.authorArticles = account.username;
-
-    foot.append(file, button);
-    card.append(head, stats, foot);
-    grid.append(card);
-  }
-}
-
 function selectAccount(username) {
   state.activeAccount = username || '';
   syncFilterState();
@@ -413,13 +369,6 @@ function wireEvents() {
     selectAccount(chip.dataset.account || '');
   });
 
-  $('#author-grid')?.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-author-articles]');
-    if (!button) return;
-    selectAccount(button.dataset.authorArticles);
-    $('#feed')?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
-  });
-
   $('#feed-list')?.addEventListener('click', (event) => {
     const retry = event.target.closest('[data-retry-feed]');
     if (retry) {
@@ -464,10 +413,8 @@ async function boot() {
   if (accountsResult.status === 'fulfilled') {
     state.accounts = accountsResult.value.items || [];
     renderFilters();
-    renderAuthors();
   } else {
-    renderAuthors();
-    toast('账号库读取失败');
+    toast('账号数据读取失败');
   }
 
   await loadFeed();

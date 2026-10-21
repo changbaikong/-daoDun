@@ -15,9 +15,9 @@
 | --- | --- |
 | ![首页](docs/preview/home-desktop.png) | ![文章](docs/preview/feed.png) |
 
-| 作者与账号库 | 阅读弹窗 |
+| 阅读弹窗 | 关于小站 |
 | --- | --- |
-| ![作者](docs/preview/authors.png) | ![阅读](docs/preview/reader.png) |
+| ![阅读](docs/preview/reader.png) | ![关于](docs/preview/about.png) |
 
 手机端：![手机](docs/preview/home-mobile.png)
 
@@ -84,6 +84,14 @@ Jk/
    ├─ make_placeholder_assets.py  # 生成占位素材
    └─ capture.mjs                 # 无头浏览器截图（开发验收用）
 ```
+
+## 线上部署
+
+已经部署到 **<http://106.55.41.41/>**：Ubuntu 24.04 + systemd + nginx 反向代理，文章数据存在服务器的 SQLite 库里（`/var/lib/jk-blog/data`）。
+
+- 部署架构与运维命令：[docs/deploy.md](docs/deploy.md)
+- 服务器相关配置备份在仓库 `deploy/` 目录
+- 更新线上代码：`powershell -ExecutionPolicy Bypass -File deploy\deploy.ps1`
 
 ## 数据库设计（账号分库）
 
@@ -153,7 +161,6 @@ app.close();
 
 - **看板娘起始页**：全屏星空背景 + 站点标题 + 打字机问候 + 数据统计。看板娘目前以文字问候的形式出场，首页不放立绘。
 - **最新文章**：跨账号 Feed；顶部胶囊可按账号筛选，对应「分库」结构。
-- **作者与账号库**：展示每个账号及其 `accounts/account-N.db` 文件，可直接跳到该账号的文章。
 - **阅读弹窗**：点击文章卡片，从对应账号库取回正文；内置一个安全的极简 Markdown 渲染器（先整体转义，再渲染）。
 - **文章深链**：`/?post=xiaoxing:1` 可直接打开某篇文章。
 

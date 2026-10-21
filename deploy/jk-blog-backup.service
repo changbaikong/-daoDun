@@ -1,0 +1,17 @@
+[Unit]
+Description=Jk Blog SQLite backup
+After=network.target
+
+[Service]
+Type=oneshot
+User=jkblog
+Group=jkblog
+Environment=BLOG_DATA_DIR=/var/lib/jk-blog/data
+Environment=BLOG_BACKUP_DIR=/var/backups/jk-blog
+Environment=BLOG_BACKUP_KEEP=7
+ExecStart=/usr/local/bin/node /opt/jk-blog/server/scripts/backup.js
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/jk-blog/data /var/backups/jk-blog

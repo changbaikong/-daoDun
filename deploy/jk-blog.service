@@ -1,0 +1,25 @@
+[Unit]
+Description=Jk Blog (Node.js + SQLite)
+After=network.target
+
+[Service]
+Type=simple
+User=jkblog
+Group=jkblog
+WorkingDirectory=/opt/jk-blog
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=4173
+Environment=BLOG_DATA_DIR=/var/lib/jk-blog/data
+ExecStart=/usr/local/bin/node server/src/index.js
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/jk-blog/data
+
+[Install]
+WantedBy=multi-user.target
