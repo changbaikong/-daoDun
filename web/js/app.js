@@ -365,33 +365,98 @@ function openArticleFromUrl() {
 /* 滚动过渡                                                            */
 /* ------------------------------------------------------------------ */
 
+const clamp01 = (value) => Math.min(1, Math.max(0, value));
+
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 }
 
-/** 带缓动的平滑滚动，替代浏览器默认的锚点跳转。 */
+let scrollJob = null;
+
+function stopScrollJob() {
+  if (!scrollJob) return;
+  cancelAnimationFrame(scrollJob.raf);
+  const finish = scrollJob.resolve;
+  scrollJob = null;
+  finish?.();
+}
+
+/**
+ * 平滑滚动到目标位置。
+ * - cancelable：用户自己滚轮 / 触摸时是否允许打断（锚点跳转允许，整屏切换期间锁住）
+ * - ease：缓动曲线，默认 easeInOutCubic（起步、收尾都柔和）
+ */
+function animateScrollTo(targetY, { duration, cancelable = true, ease = easeInOutCubic } = {}) {
+  stopScrollJob();
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+
+  if (prefersReducedMotion || Math.abs(distance) < 1) {
+    window.scrollTo(0, targetY);
+    return Promise.resolve();
+  }
+
+  const total = duration ?? Math.min(980, Math.max(520, Math.abs(distance) * 0.58));
+  const startTime = performance.now();
+
+  return new Promise((resolve) => {
+    const job = { cancelable, resolve };
+    const step = (now) => {
+      const progress = Math.min(1, Math.max(0, (now - startTime) / total));
+      window.scrollTo(0, startY + distance * ease(progress));
+      if (progress < 1) {
+        job.raf = requestAnimationFrame(step);
+        return;
+      }
+      if (scrollJob === job) scrollJob = null;
+      resolve();
+    };
+    scrollJob = job;
+    job.raf = requestAnimationFrame(step);
+  });
+}
+
+/** 第二屏（.content-stage）在文档里的起始位置。 */
+function measureStageTop() {
+  const stage = $('.content-stage');
+  return stage ? Math.round(stage.getBoundingClientRect().top + window.scrollY) : 0;
+}
+
+/** 首屏 <-> 内容屏之间的一次整屏切换。 */
+function switchScreen(direction) {
+  holdSettleLock();
+  animateScrollTo(direction > 0 ? measureStageTop() : 0, {
+    duration: 720,
+    cancelable: false,
+    ease: easeInOutCubic,
+  }).then(holdSettleLock);
+}
+
+/* 整屏切换结束后的短暂锁：把触控板惯性产生的余下滚轮事件吞掉，
+   保证「一次手势 = 一次整屏切换」，不会切换完又滑出去一截。 */
+let settleLock = false;
+let settleTimer = null;
+
+function holdSettleLock() {
+  settleLock = true;
+  clearTimeout(settleTimer);
+  settleTimer = setTimeout(() => {
+    settleLock = false;
+  }, 220);
+}
+
+/** 顶部导航 / 按钮的锚点跳转，替代浏览器默认跳转。 */
 function scrollToSection(target) {
   const topbar = $('.topbar');
   const offset = (topbar?.offsetHeight || 64) + 14;
   const targetY = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
-
-  if (prefersReducedMotion) {
-    window.scrollTo(0, targetY);
-    return;
-  }
-
-  const startY = window.scrollY;
-  const distance = targetY - startY;
-  if (Math.abs(distance) < 2) return;
-
-  const duration = Math.min(1100, Math.max(520, Math.abs(distance) * 0.5));
-  const startTime = performance.now();
-  const step = (now) => {
-    const progress = Math.min(1, (now - startTime) / duration);
-    window.scrollTo(0, startY + distance * easeInOutCubic(progress));
-    if (progress < 1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
+  // 长距离用稍长的时长，配合 easeInOutCubic 让起步和收尾都更柔和
+  const distance = Math.abs(targetY - window.scrollY);
+  animateScrollTo(targetY, {
+    cancelable: true,
+    ease: easeInOutCubic,
+    duration: Math.min(900, Math.max(480, distance * 0.7)),
+  });
 }
 
 function initSmoothAnchors() {
@@ -406,6 +471,110 @@ function initSmoothAnchors() {
       scrollToSection(target);
     });
   }
+
+  // 用户自己触摸滚动时，让锚点动画立即停下
+  window.addEventListener(
+    'touchstart',
+    () => {
+      if (scrollJob?.cancelable) stopScrollJob();
+    },
+    { passive: true },
+  );
+}
+
+/**
+ * 两屏之间的整屏切换：
+ * - 鼠标滚轮：在首屏顶部向下、或在内容屏顶部向上时，累计一档滚轮后整屏切换；
+ * - 键盘：PageDown / 空格（向下）、PageUp / Shift+空格（向上）；
+ * - 触屏设备保持原生滚动，不做拦截。
+ */
+function initScreenTransition() {
+  if (prefersReducedMotion) return;
+
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const pageKeys = new Set(['PageDown', 'PageUp', ' ']);
+  const EDGE_TOLERANCE = 8;
+  let wheelAcc = 0;
+  let wheelTimer = null;
+
+  const resetWheelAcc = () => {
+    wheelAcc = 0;
+    clearTimeout(wheelTimer);
+    wheelTimer = null;
+  };
+
+  const onWheel = (event) => {
+    if (event.deltaY === 0 || document.body.classList.contains('is-locked')) return;
+
+    // 整屏切换动画期间 / 惯性尾巴期间锁住滚轮，避免多个动画互相抢滚动位置
+    if (settleLock) {
+      holdSettleLock();
+      event.preventDefault();
+      return;
+    }
+
+    if (scrollJob) {
+      if (!scrollJob.cancelable) {
+        event.preventDefault();
+        return;
+      }
+      stopScrollJob();
+    }
+
+    if (!finePointer) return;
+
+    const y = window.scrollY;
+    const stageTop = measureStageTop();
+    const delta =
+      event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1);
+    const wantsForward = y <= EDGE_TOLERANCE && delta > 0;
+    const wantsBack = Math.abs(y - stageTop) <= EDGE_TOLERANCE && delta < 0;
+
+    if (!wantsForward && !wantsBack) {
+      resetWheelAcc();
+      return;
+    }
+
+    event.preventDefault();
+    wheelAcc += delta;
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(resetWheelAcc, 180);
+
+    // 触控板会把滚动拆成很多小 delta，累计到 60 才切换，避免轻轻一碰就整屏跳
+    if (Math.abs(wheelAcc) >= 60) {
+      const direction = wheelAcc > 0 ? 1 : -1;
+      resetWheelAcc();
+      switchScreen(direction);
+    }
+  };
+
+  window.addEventListener('wheel', onWheel, { passive: false });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (document.body.classList.contains('is-locked')) return;
+    const active = document.activeElement;
+    if (active?.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(active?.tagName || '')) return;
+
+    // 整屏切换动画 / 惯性尾巴期间，锁住整屏滚动键
+    if ((scrollJob && !scrollJob.cancelable) || settleLock) {
+      if (pageKeys.has(event.key)) event.preventDefault();
+      return;
+    }
+
+    const y = window.scrollY;
+    const stageTop = measureStageTop();
+    const forward = event.key === 'PageDown' || (event.key === ' ' && !event.shiftKey);
+    const back = event.key === 'PageUp' || (event.key === ' ' && event.shiftKey);
+
+    if (y <= EDGE_TOLERANCE && forward) {
+      event.preventDefault();
+      switchScreen(1);
+    } else if (Math.abs(y - stageTop) <= EDGE_TOLERANCE && back) {
+      event.preventDefault();
+      switchScreen(-1);
+    }
+  });
 }
 
 /** 第二屏元素首次进入视口时渐入。 */
@@ -431,23 +600,29 @@ function initReveal() {
   for (const item of items) observer.observe(item);
 }
 
-/** 向下滚动时首屏内容轻微上移并淡出，让两屏衔接更自然。 */
+/** 首屏滚出视口时：标题区淡出、上浮、轻微缩小，背景压暗，让两屏衔接更自然。 */
 function initHeroScroll() {
   if (prefersReducedMotion) return;
   const hero = $('.hero');
   const copy = $('.hero-copy');
   const hint = $('.scroll-hint');
+  const veil = $('.scene-veil');
   if (!hero || !copy) return;
 
   let ticking = false;
   const update = () => {
     ticking = false;
     const rect = hero.getBoundingClientRect();
-    const distance = Math.max(rect.height * 0.7, 1);
-    const progress = Math.min(1, Math.max(0, -rect.top / distance));
-    copy.style.opacity = String(1 - progress * 0.9);
-    copy.style.transform = `translate3d(0, ${(-progress * 28).toFixed(2)}px, 0)`;
-    if (hint) hint.style.opacity = String(Math.max(0, 1 - progress * 2.2));
+    const height = Math.max(rect.height, 1);
+    const raw = clamp01(-rect.top / (height * 0.8));
+    const eased = raw * raw * (3 - 2 * raw); // smoothstep：起止更柔，中段更有推进感
+
+    copy.style.opacity = String(clamp01(1 - eased));
+    copy.style.transform = `translate3d(0, ${(-eased * 44).toFixed(2)}px, 0) scale(${(
+      1 - eased * 0.016
+    ).toFixed(4)})`;
+    if (hint) hint.style.opacity = String(clamp01(1 - raw * 2.4));
+    if (veil) veil.style.opacity = String(clamp01(eased * 0.65));
   };
 
   window.addEventListener(
@@ -500,6 +675,7 @@ function wireEvents() {
 async function boot() {
   wireEvents();
   initSmoothAnchors();
+  initScreenTransition();
   initReveal();
   initHeroScroll();
 

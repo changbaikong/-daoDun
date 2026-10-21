@@ -34,7 +34,9 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* 锚点平滑滚动由 js（app.js 的 animateScrollTo）负责，
+     这里保持 auto，避免 CSS smooth 和 JS 动画同时生效导致一顿一顿的。 */
+  scroll-behavior: auto;
 }
 
 body {
@@ -205,6 +207,15 @@ img {
   animation: glow-float 26s ease-in-out infinite alternate-reverse;
 }
 
+/* 滚动进入第二屏时压暗背景，让两屏衔接更自然（透明度由 js 控制） */
+.scene-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(4, 7, 16, 0.08), rgba(4, 7, 16, 0.62));
+  opacity: 0;
+}
+
 /* ------------------------------------------------------------------
    顶栏
    ------------------------------------------------------------------ */
@@ -373,6 +384,7 @@ img {
 .hero-copy {
   width: 100%;
   max-width: 620px;
+  will-change: opacity, transform;
 }
 
 .hero-copy > * {
@@ -550,10 +562,10 @@ img {
 
 .js-reveal [data-reveal] {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(26px);
   transition:
-    opacity 0.75s cubic-bezier(0.22, 0.8, 0.24, 1),
-    transform 0.75s cubic-bezier(0.22, 0.8, 0.24, 1);
+    opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
@@ -583,6 +595,22 @@ img {
 
 .screen-divider::after {
   background: linear-gradient(90deg, rgba(148, 170, 220, 0.35), transparent);
+}
+
+/* JS 可用时，分界线从中间向两侧展开 */
+.js-reveal .screen-divider::before,
+.js-reveal .screen-divider::after {
+  opacity: 0;
+  transform: scaleX(0.15);
+  transition:
+    opacity 0.6s ease,
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.js-reveal .screen-divider.is-revealed::before,
+.js-reveal .screen-divider.is-revealed::after {
+  opacity: 1;
+  transform: scaleX(1);
 }
 
 .content-stage .feed-section {
