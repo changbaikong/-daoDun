@@ -147,14 +147,14 @@ if (options.scroll) {
   await evaluate(
     `(() => { const el = document.querySelector(${JSON.stringify(options.scroll)}); if (el) el.scrollIntoView({ block: 'start', behavior: 'instant' }); return Boolean(el); })()`,
   );
-  await sleep(350);
+  await sleep(Number(options['scroll-wait'] || 1200));
 }
 
 if (options.click) {
   await evaluate(
     `(() => { const el = document.querySelector(${JSON.stringify(options.click)}); if (el) el.click(); return Boolean(el); })()`,
   );
-  await sleep(900);
+  await sleep(Number(options['click-wait'] || 1800));
 }
 
 const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });

@@ -16,6 +16,9 @@ const FALLBACK_GREETINGS = [
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// 只有 JS 正常加载时才启用「渐入」动画，避免无 JS 时内容被隐藏。
+document.documentElement.classList.add('js-reveal');
+
 const state = {
   site: null,
   accounts: [],
@@ -359,6 +362,107 @@ function openArticleFromUrl() {
 }
 
 /* ------------------------------------------------------------------ */
+/* 滚动过渡                                                            */
+/* ------------------------------------------------------------------ */
+
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+}
+
+/** 带缓动的平滑滚动，替代浏览器默认的锚点跳转。 */
+function scrollToSection(target) {
+  const topbar = $('.topbar');
+  const offset = (topbar?.offsetHeight || 64) + 14;
+  const targetY = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+
+  if (prefersReducedMotion) {
+    window.scrollTo(0, targetY);
+    return;
+  }
+
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  if (Math.abs(distance) < 2) return;
+
+  const duration = Math.min(1100, Math.max(520, Math.abs(distance) * 0.5));
+  const startTime = performance.now();
+  const step = (now) => {
+    const progress = Math.min(1, (now - startTime) / duration);
+    window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function initSmoothAnchors() {
+  for (const link of $$('a[href^="#"]')) {
+    if (link.classList.contains('skip-link')) continue;
+    link.addEventListener('click', (event) => {
+      const hash = link.getAttribute('href');
+      if (!hash || hash === '#') return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+      event.preventDefault();
+      scrollToSection(target);
+    });
+  }
+}
+
+/** 第二屏元素首次进入视口时渐入。 */
+function initReveal() {
+  const items = $$('[data-reveal]');
+  if (items.length === 0) return;
+
+  if (prefersReducedMotion || typeof IntersectionObserver === 'undefined') {
+    for (const item of items) item.classList.add('is-revealed');
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-revealed');
+        observer.unobserve(entry.target);
+      }
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -6% 0px' },
+  );
+  for (const item of items) observer.observe(item);
+}
+
+/** 向下滚动时首屏内容轻微上移并淡出，让两屏衔接更自然。 */
+function initHeroScroll() {
+  if (prefersReducedMotion) return;
+  const hero = $('.hero');
+  const copy = $('.hero-copy');
+  const hint = $('.scroll-hint');
+  if (!hero || !copy) return;
+
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const rect = hero.getBoundingClientRect();
+    const distance = Math.max(rect.height * 0.7, 1);
+    const progress = Math.min(1, Math.max(0, -rect.top / distance));
+    copy.style.opacity = String(1 - progress * 0.9);
+    copy.style.transform = `translate3d(0, ${(-progress * 28).toFixed(2)}px, 0)`;
+    if (hint) hint.style.opacity = String(Math.max(0, 1 - progress * 2.2));
+  };
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+  update();
+}
+
+/* ------------------------------------------------------------------ */
 /* 事件绑定                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -395,6 +499,9 @@ function wireEvents() {
 
 async function boot() {
   wireEvents();
+  initSmoothAnchors();
+  initReveal();
+  initHeroScroll();
 
   const [siteResult, statsResult, accountsResult] = await Promise.allSettled([
     getSite(),
