@@ -87,8 +87,9 @@ Jk/
 
 ## 线上部署
 
-已经部署到 **<http://106.55.41.41/>**：Ubuntu 24.04 + systemd + nginx 反向代理，文章数据存在服务器的 SQLite 库里（`/var/lib/jk-blog/data`）。
+已经部署到 **<https://congyu.xyz/>**：Ubuntu 24.04 + systemd + nginx 反向代理 + Let's Encrypt HTTPS（证书自动续期），文章数据存在服务器的 SQLite 库里（`/var/lib/jk-blog/data`）。
 
+- `http://congyu.xyz`、`http://www.congyu.xyz`、`https://www.congyu.xyz` 都会 301 到主域名；`http://106.55.41.41/` 仍可 IP 直连调试
 - 部署架构与运维命令：[docs/deploy.md](docs/deploy.md)
 - 服务器相关配置备份在仓库 `deploy/` 目录
 - 更新线上代码：`powershell -ExecutionPolicy Bypass -File deploy\deploy.ps1`
