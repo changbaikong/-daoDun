@@ -8,6 +8,8 @@
 - `http://congyu.xyz/`、`http://www.congyu.xyz/`、`https://www.congyu.xyz/` 都会 **301** 到主域名
 - 服务器 IP `http://106.55.41.41/` 仍可直连访问（IP 没有证书，仅用于调试 / 健康检查）
 
+> ⚠️ **备案状态（2026-10-21）**：域名 `congyu.xyz` 已绑定、证书已签发，但**尚未完成 ICP 备案**。从大陆网络访问 `https://congyu.xyz/` 目前会在 TLS 握手阶段被重置（服务器本机测试正常，证书有效期至 2027-01-19）。备案通过前请用 `http://106.55.41.41/` 访问；备案流程与验收清单见 [icp-filing.md](icp-filing.md)。
+
 文章保存在**服务器后端**的 SQLite 数据库里，不在前端，也不依赖本地电脑。
 
 ## 部署架构
@@ -71,6 +73,7 @@ Node.js v22.20（systemd 服务 jk-blog，用户 jkblog）
 - 证书覆盖 `congyu.xyz` 和 `www.congyu.xyz` 两个名字，有效期 90 天；`certbot.timer` 每天自动检查续期，**不需要手动续**。
 - 续期验证依赖 80 端口：nginx 的域名 HTTP server 块里专门保留了 `/.well-known/acme-challenge/`（root `/var/www/html`），**不要删掉这段 location**。
 - 如果以后换服务器 / 迁域名，顺序是：Lighthouse 防火墙先放行 443 → DNSPod 改 A 记录 → 按 `deploy/nginx-jk-blog.conf` 部署 nginx → 重新执行上面的 certbot 命令。
+- **域名备案尚未完成**：备案通过前外网 443 可能被拦截；待办事项、所需材料和通过后的验收步骤见 [icp-filing.md](icp-filing.md)。
 
 ## 日常运维命令
 

@@ -87,6 +87,8 @@ Jk/
 
 ## 线上部署
 
+> ⚠️ `congyu.xyz` 已完成域名绑定和 HTTPS 配置，但**还没有 ICP 备案**：备案通过前请用 <http://106.55.41.41/> 访问，域名 443 从外网目前可能被拦截。备案流程与通过后的验收清单见 [docs/icp-filing.md](docs/icp-filing.md)。
+
 已经部署到 **<https://congyu.xyz/>**：Ubuntu 24.04 + systemd + nginx 反向代理 + Let's Encrypt HTTPS（证书自动续期），文章数据存在服务器的 SQLite 库里（`/var/lib/jk-blog/data`）。
 
 - `http://congyu.xyz`、`http://www.congyu.xyz`、`https://www.congyu.xyz` 都会 301 到主域名；`http://106.55.41.41/` 仍可 IP 直连调试
