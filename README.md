@@ -191,6 +191,7 @@ app.close();
 | `web/assets/hero-bg.jpg` | 桌面背景 | 当前为 1672 × 941（16:9）的插画；有更高清原图时建议换成 2560 × 1440 |
 | `web/assets/hero-bg-mobile.jpg` | 手机竖屏背景 | 1080 × 1920（9:16），由同一张插画裁切生成 |
 | `web/assets/articles-hero.jpg` | 文章页顶部横图 | 1280 × 720（16:9），只在第二页 `/articles` 顶部使用；换图直接覆盖 |
+| `web/assets/favicon.png` | 浏览器标签页图标 | 64 × 64 圆角头像 PNG；iOS 主屏图标是同图的 `web/assets/apple-touch-icon.png`（180 × 180） |
 
 > 看板娘立绘当前**未使用**（已移除 AI 生成的占位立绘）。如果以后要加，参考 [docs/background-spec.md](docs/background-spec.md) 里保留的立绘规格，并恢复 hero 右侧的立绘位。
 
