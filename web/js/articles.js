@@ -8,6 +8,9 @@ import { getAccountArticles, getAccounts, getFeed, getSite } from './api.js';
  */
 const PAGE_SIZE = 12;
 
+// 作者头像：账号库 avatar 字段有自定义地址就用它，否则用站点的默认头像。
+const DEFAULT_AVATAR = '/assets/author-avatar.png';
+
 // 只有 JS 正常加载时才启用「渐入」动画，避免无 JS 时内容被隐藏。
 document.documentElement.classList.add('js-reveal');
 
@@ -39,16 +42,23 @@ function formatDate(iso) {
   }).format(date);
 }
 
-function initialOf(name) {
-  const text = String(name || '?').trim();
-  return text ? text.slice(0, 1).toUpperCase() : '?';
-}
-
 function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
   if (text !== undefined) node.textContent = text;
   return node;
+}
+
+/** 生成一个小圆形作者头像；account.avatar 为空时用默认头像。 */
+function createAvatar(author, className, size = 26) {
+  const avatar = el('img', className);
+  avatar.src = author?.avatar || DEFAULT_AVATAR;
+  avatar.alt = '';
+  avatar.width = size;
+  avatar.height = size;
+  avatar.loading = 'lazy';
+  avatar.decoding = 'async';
+  return avatar;
 }
 
 let toastTimer = null;
@@ -192,7 +202,7 @@ function createPostCard(item) {
 
   const foot = el('div', 'post-card-foot');
   const author = el('span', 'post-author');
-  author.append(el('span', 'post-avatar', initialOf(item.author?.nickname)));
+  author.append(createAvatar(item.author, 'post-avatar post-avatar--img'));
   author.append(el('span', 'post-author-name', item.author?.nickname || username || '匿名'));
   const open = el('span', 'post-open post-open--static', '阅读全文 →');
   foot.append(author, open);

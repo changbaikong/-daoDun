@@ -811,6 +811,15 @@ img {
   font-weight: 700;
 }
 
+/* 有真实头像时：图片裁成圆形，加一圈细边和阴影，和卡片融为一体 */
+.post-avatar--img {
+  flex: none;
+  object-fit: cover;
+  border: 1px solid rgba(160, 190, 255, 0.4);
+  background: #0a1122;
+  box-shadow: 0 2px 10px rgba(3, 6, 15, 0.55);
+}
+
 .post-open {
   padding: 2px 0;
   border: 0;
@@ -1444,6 +1453,17 @@ img {
 
 .reader-author {
   color: #cfe0ff;
+}
+
+/* 阅读弹窗 / 文章详情页作者行前的小头像 */
+.reader-avatar {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(148, 170, 220, 0.35);
+  background: #0a1122;
 }
 
 .reader-dot {

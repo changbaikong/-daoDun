@@ -192,6 +192,7 @@ app.close();
 | `web/assets/hero-bg-mobile.jpg` | 手机竖屏背景 | 1080 × 1920（9:16），由同一张插画裁切生成 |
 | `web/assets/articles-hero.jpg` | 文章页顶部横图 | 1280 × 720（16:9），只在第二页 `/articles` 顶部使用；换图直接覆盖 |
 | `web/assets/favicon.png` | 浏览器标签页图标 | 64 × 64 圆角头像 PNG；iOS 主屏图标是同图的 `web/assets/apple-touch-icon.png`（180 × 180） |
+| `web/assets/author-avatar.png` | 作者头像 | 128 × 128 正方形；文章卡片、阅读弹窗、文章详情页使用。账号库 `avatar` 字段有值时会优先用账号自己的头像 |
 
 > 看板娘立绘当前**未使用**（已移除 AI 生成的占位立绘）。如果以后要加，参考 [docs/background-spec.md](docs/background-spec.md) 里保留的立绘规格，并恢复 hero 右侧的立绘位。
 

@@ -7,6 +7,9 @@ import { renderMarkdown } from './markdown.js';
  */
 const state = { site: null };
 
+// 作者头像：账号库 avatar 字段有自定义地址就用它，否则用站点的默认头像。
+const DEFAULT_AVATAR = '/assets/author-avatar.png';
+
 const $ = (selector, root = document) => root.querySelector(selector);
 
 function formatDate(iso) {
@@ -25,6 +28,18 @@ function el(tag, className, text) {
   if (className) node.className = className;
   if (text !== undefined) node.textContent = text;
   return node;
+}
+
+/** 生成一个小圆形作者头像；account.avatar 为空时用默认头像。 */
+function createAvatar(author, className, size = 20) {
+  const avatar = el('img', className);
+  avatar.src = author?.avatar || DEFAULT_AVATAR;
+  avatar.alt = '';
+  avatar.width = size;
+  avatar.height = size;
+  avatar.loading = 'lazy';
+  avatar.decoding = 'async';
+  return avatar;
 }
 
 function siteTitle() {
@@ -68,6 +83,7 @@ function renderArticle({ article, author }) {
 
   const meta = $('#article-meta');
   meta.replaceChildren();
+  meta.append(createAvatar(author, 'reader-avatar'));
   meta.append(el('span', 'reader-author', `@${author?.username || 'unknown'}`));
   meta.append(el('span', 'reader-dot', '·'));
   meta.append(el('span', undefined, formatDate(article.publishedAt || article.updatedAt)));
