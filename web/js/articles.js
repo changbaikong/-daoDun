@@ -1,9 +1,9 @@
-import { getAccountArticles, getAccounts, getFeed, getSite } from './api.js';
+import { getFeed, getSite } from './api.js';
 
 /**
  * 第二页：文章列表页。
- * - 跨账号 Feed + 按账号筛选；
- * - 分页（「加载更多」），筛选条件写进 ?account= 方便分享；
+ * - 所有已发布文章按时间排序（暂时不按账号筛选/分组）；
+ * - 分页（「加载更多」）；
  * - 每张卡片都是指向独立文章页 /articles/<账号>/<id> 的链接。
  */
 const PAGE_SIZE = 12;
@@ -16,8 +16,6 @@ document.documentElement.classList.add('js-reveal');
 
 const state = {
   site: null,
-  accounts: [],
-  activeAccount: '',
   items: [],
   total: 0,
   offset: 0,
@@ -77,10 +75,6 @@ function toast(message) {
   }, 3200);
 }
 
-function accountLabel(account) {
-  return account?.nickname || account?.username || '';
-}
-
 /** 图下文章区第一次进入视口时渐入，避免从横图直接切到列表太突兀。 */
 function initReveal() {
   const items = $$('[data-reveal]');
@@ -112,9 +106,7 @@ function initReveal() {
 /* ------------------------------------------------------------------ */
 
 function updateDocumentTitle() {
-  const siteTitle = state.site?.title || '刀盾的小屋';
-  const account = state.accounts.find((item) => item.username === state.activeAccount);
-  document.title = account ? `${accountLabel(account)} 的文章 · ${siteTitle}` : `文章 · ${siteTitle}`;
+  document.title = `文章 · ${state.site?.title || '刀盾的小屋'}`;
 }
 
 function applySite(site) {
@@ -125,51 +117,6 @@ function applySite(site) {
     if (value) node.textContent = value;
   }
   updateDocumentTitle();
-}
-
-/* ------------------------------------------------------------------ */
-/* 账号筛选                                                            */
-/* ------------------------------------------------------------------ */
-
-function renderFilters() {
-  const bar = $('#filter-bar');
-  if (!bar) return;
-  bar.replaceChildren();
-
-  const all = el('button', 'filter-chip is-active', '全部账号');
-  all.type = 'button';
-  all.dataset.account = '';
-  bar.append(all);
-
-  for (const account of state.accounts) {
-    const chip = el('button', 'filter-chip', accountLabel(account));
-    chip.type = 'button';
-    chip.dataset.account = account.username;
-    bar.append(chip);
-  }
-}
-
-function syncFilterState() {
-  for (const chip of $$('#filter-bar .filter-chip')) {
-    chip.classList.toggle('is-active', chip.dataset.account === state.activeAccount);
-  }
-}
-
-function updateUrl() {
-  const url = new URL(window.location.href);
-  if (state.activeAccount) url.searchParams.set('account', state.activeAccount);
-  else url.searchParams.delete('account');
-  history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
-}
-
-function selectAccount(username) {
-  const next = username || '';
-  if (next === state.activeAccount) return;
-  state.activeAccount = next;
-  syncFilterState();
-  updateUrl();
-  updateDocumentTitle();
-  loadPosts({ reset: true });
 }
 
 /* ------------------------------------------------------------------ */
@@ -232,13 +179,7 @@ function updatePageNote(loadingText) {
     note.textContent = loadingText;
     return;
   }
-  const account = state.accounts.find((item) => item.username === state.activeAccount);
-  if (account) {
-    note.textContent = `@${account.username} · ${state.total} 篇已发布`;
-  } else {
-    const authors = state.accounts.length;
-    note.textContent = `共 ${state.total} 篇已发布 · ${authors} 位作者 · 按发布时间排序`;
-  }
+  note.textContent = `共 ${state.total} 篇已发布 · 按发布时间排序`;
 }
 
 function syncMore() {
@@ -269,9 +210,7 @@ async function loadPosts({ reset = false } = {}) {
   syncMore();
 
   try {
-    const data = state.activeAccount
-      ? await getAccountArticles(state.activeAccount, { limit: PAGE_SIZE, offset: state.offset })
-      : await getFeed(PAGE_SIZE, state.offset);
+    const data = await getFeed(PAGE_SIZE, state.offset);
     const items = data.items || [];
     state.total = typeof data.total === 'number' ? data.total : items.length;
     state.offset += items.length;
@@ -279,13 +218,7 @@ async function loadPosts({ reset = false } = {}) {
 
     if (reset && list) list.replaceChildren();
     if (state.items.length === 0) {
-      renderListState(
-        state.activeAccount
-          ? `${accountLabel(
-              state.accounts.find((item) => item.username === state.activeAccount),
-            )} 的文章库里还没有已发布文章。`
-          : '还没有已发布的文章。运行 npm run seed 写入演示内容，或先往账号库里存一篇。',
-      );
+      renderListState('还没有已发布的文章。运行 npm run seed 写入演示内容，或先写一篇。');
     } else if (list) {
       for (const item of items) list.append(createPostCard(item));
     }
@@ -311,12 +244,6 @@ async function loadPosts({ reset = false } = {}) {
 /* ------------------------------------------------------------------ */
 
 function wireEvents() {
-  $('#filter-bar')?.addEventListener('click', (event) => {
-    const chip = event.target.closest('.filter-chip');
-    if (!chip) return;
-    selectAccount(chip.dataset.account || '');
-  });
-
   $('#load-more')?.addEventListener('click', () => loadPosts());
 
   $('#post-list')?.addEventListener('click', (event) => {
@@ -324,32 +251,16 @@ function wireEvents() {
   });
 }
 
-function readAccountFromUrl() {
-  const raw = new URLSearchParams(window.location.search).get('account') || '';
-  if (!raw) return '';
-  return state.accounts.some((account) => account.username === raw) ? raw : '';
-}
-
 async function boot() {
   wireEvents();
   initReveal();
 
-  const [siteResult, accountsResult] = await Promise.allSettled([getSite(), getAccounts()]);
+  const [siteResult] = await Promise.allSettled([getSite()]);
 
   if (siteResult.status === 'fulfilled') {
     applySite(siteResult.value.site);
   } else {
     toast('站点信息读取失败，已使用默认文案');
-  }
-
-  if (accountsResult.status === 'fulfilled') {
-    state.accounts = accountsResult.value.items || [];
-    state.activeAccount = readAccountFromUrl();
-    renderFilters();
-    syncFilterState();
-    updateDocumentTitle();
-  } else {
-    toast('账号数据读取失败');
   }
 
   await loadPosts({ reset: true });

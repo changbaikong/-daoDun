@@ -48,10 +48,10 @@
     "title": "刀盾的小屋",
     "subtitle": "在代码与星光之间，写一点想写的东西。",
     "description": "一个用 Node.js 和 SQLite 写成的博客，记录代码、文字与一点星光。",
-    "owner": "Jk",
+    "owner": "DaoDun",
     "mascotName": "小星",
     "mascotLine": "欢迎回来，今天也一起写点什么吧～",
-    "footer": "© 2026 Jk · 用 SQLite 写下每一个字",
+    "footer": "© 2026 DaoDun · 用 SQLite 写下每一个字",
     "aboutTitle": "关于这个小站",
     "aboutText": "一个用 **Node.js + SQLite** 搭起来的个人博客：主库登记账号，每个账号拥有独立的文章库；前端原生 HTML / CSS / JavaScript，没有构建步骤。",
     "aboutTags": "Node.js,SQLite,Vanilla JS,账号分库,零依赖"
@@ -110,7 +110,7 @@
     {
       "id": 1,
       "username": "jk",
-      "nickname": "Jk",
+      "nickname": "DaoDun",
       "avatar": "",
       "bio": "站长。写代码，也写点字。",
       "createdAt": "2026-10-21T03:37:20.227Z",
@@ -178,7 +178,7 @@
 | 路径 | 说明 |
 | --- | --- |
 | `/` | 看板娘起始页（首屏问候 + 数据统计，向下滚动看最新文章） |
-| `/articles` | 第二页：文章列表（跨账号 Feed、按账号筛选、加载更多） |
+| `/articles` | 第二页：文章列表（所有已发布文章按时间排序 + 加载更多；暂时不按账号筛选） |
 | `/articles/:username/:id` | 文章独立阅读页；`id` 是账号库内 ID，所以要带 `username` |
 | `/about` | 关于页（标题 / 正文 / 标签来自主库 `site_settings`，由前端 <code>/js/about.js</code> 渲染） |
 | `/css/*`、`/js/*` | 样式与脚本 |

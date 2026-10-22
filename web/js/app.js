@@ -1,11 +1,4 @@
-import {
-  getAccountArticles,
-  getAccounts,
-  getArticle,
-  getFeed,
-  getSite,
-  getStats,
-} from './api.js';
+import { getArticle, getFeed, getSite, getStats } from './api.js';
 import { renderMarkdown } from './markdown.js';
 
 const FALLBACK_GREETINGS = [
@@ -24,8 +17,6 @@ document.documentElement.classList.add('js-reveal');
 
 const state = {
   site: null,
-  accounts: [],
-  activeAccount: '',
   feedItems: [],
   greetingLines: [],
   greetingIndex: 0,
@@ -163,40 +154,6 @@ function typeText(node, text) {
 }
 
 /* ------------------------------------------------------------------ */
-/* 账号筛选 + 作者卡片                                                  */
-/* ------------------------------------------------------------------ */
-
-function renderFilters() {
-  const bar = $('#filter-bar');
-  if (!bar) return;
-  bar.replaceChildren();
-
-  const all = el('button', 'filter-chip is-active', '全部账号');
-  all.type = 'button';
-  all.dataset.account = '';
-  bar.append(all);
-
-  for (const account of state.accounts) {
-    const chip = el('button', 'filter-chip', account.nickname || account.username);
-    chip.type = 'button';
-    chip.dataset.account = account.username;
-    bar.append(chip);
-  }
-}
-
-function syncFilterState() {
-  for (const chip of $$('#filter-bar .filter-chip')) {
-    chip.classList.toggle('is-active', chip.dataset.account === state.activeAccount);
-  }
-}
-
-function selectAccount(username) {
-  state.activeAccount = username || '';
-  syncFilterState();
-  loadFeed();
-}
-
-/* ------------------------------------------------------------------ */
 /* Feed                                                                */
 /* ------------------------------------------------------------------ */
 
@@ -251,12 +208,7 @@ function renderFeed() {
   list.replaceChildren();
 
   if (state.feedItems.length === 0) {
-    const account = state.accounts.find((item) => item.username === state.activeAccount);
-    renderFeedState(
-      account
-        ? `${account.nickname || account.username} 的文章库里还没有已发布文章。`
-        : '还没有已发布的文章。运行 npm run seed 写入演示内容，或先往账号库里存一篇。',
-    );
+    renderFeedState('还没有已发布的文章。运行 npm run seed 写入演示内容，或先写一篇。');
     return;
   }
 
@@ -271,13 +223,8 @@ async function loadFeed() {
   list.replaceChildren(el('p', 'feed-state', '正在读取文章库…'));
 
   try {
-    if (state.activeAccount) {
-      const data = await getAccountArticles(state.activeAccount, { limit: 12 });
-      state.feedItems = data.items || [];
-    } else {
-      const data = await getFeed(12);
-      state.feedItems = data.items || [];
-    }
+    const data = await getFeed(12);
+    state.feedItems = data.items || [];
     renderFeed();
   } catch (error) {
     renderFeedState(error.message || '文章读取失败', { retry: true });
@@ -681,12 +628,6 @@ function initHeroScroll() {
 /* ------------------------------------------------------------------ */
 
 function wireEvents() {
-  $('#filter-bar')?.addEventListener('click', (event) => {
-    const chip = event.target.closest('.filter-chip');
-    if (!chip) return;
-    selectAccount(chip.dataset.account || '');
-  });
-
   $('#feed-list')?.addEventListener('click', (event) => {
     const retry = event.target.closest('[data-retry-feed]');
     if (retry) {
@@ -718,11 +659,7 @@ async function boot() {
   initReveal();
   initHeroScroll();
 
-  const [siteResult, statsResult, accountsResult] = await Promise.allSettled([
-    getSite(),
-    getStats(),
-    getAccounts(),
-  ]);
+  const [siteResult, statsResult] = await Promise.allSettled([getSite(), getStats()]);
 
   if (siteResult.status === 'fulfilled') {
     applySite(siteResult.value.site);
@@ -732,12 +669,6 @@ async function boot() {
   startGreeting();
 
   if (statsResult.status === 'fulfilled') renderStats(statsResult.value);
-  if (accountsResult.status === 'fulfilled') {
-    state.accounts = accountsResult.value.items || [];
-    renderFilters();
-  } else {
-    toast('账号数据读取失败');
-  }
 
   await loadFeed();
   openArticleFromUrl();

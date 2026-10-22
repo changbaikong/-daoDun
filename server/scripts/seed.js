@@ -12,7 +12,7 @@ const { services, db } = app;
 const accountsSeed = [
   {
     username: 'jk',
-    nickname: 'Jk',
+    nickname: 'DaoDun',
     bio: '站长。写代码，也写点字。',
     articles: [
       {

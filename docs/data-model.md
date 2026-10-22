@@ -55,10 +55,10 @@ data/
 | `title` | `刀盾的小屋` |
 | `subtitle` | `在代码与星光之间，写一点想写的东西。` |
 | `description` | `一个用 Node.js 和 SQLite 写成的博客，记录代码、文字与一点星光。` |
-| `owner` | `Jk` |
+| `owner` | `DaoDun` |
 | `mascotName` | `小星` |
 | `mascotLine` | `欢迎回来，今天也一起写点什么吧～` |
-| `footer` | `© 2026 Jk · 用 SQLite 写下每一个字` |
+| `footer` | `© 2026 DaoDun · 用 SQLite 写下每一个字` |
 | `aboutTitle` | `关于这个小站` |
 | `aboutText` | `一个用 **Node.js + SQLite** 搭起来的个人博客：主库登记账号，每个账号拥有独立的文章库；前端原生 HTML / CSS / JavaScript，没有构建步骤。`（Markdown 文本） |
 | `aboutTags` | `Node.js,SQLite,Vanilla JS,账号分库,零依赖`（逗号分隔，前端渲染成标签） |

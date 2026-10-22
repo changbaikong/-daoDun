@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 echo.
 echo   ============================================
-echo    Jk Blog - local launcher
+echo    DaoDun Blog - local launcher
 echo   ============================================
 echo.
 
@@ -15,8 +15,8 @@ if not exist "data\master.db" (
 )
 
 echo   Starting server in a new window...
-echo   (close the "Jk Blog Server" window to stop it)
-start "Jk Blog Server" cmd /k "npm start"
+echo   (close the "DaoDun Blog Server" window to stop it)
+start "DaoDun Blog Server" cmd /k "npm start"
 
 echo   Waiting for the server...
 ping -n 4 127.0.0.1 >nul
