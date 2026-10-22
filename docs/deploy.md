@@ -77,10 +77,12 @@ Node.js v22.20（systemd 服务 jk-blog，用户 jkblog）
 
 ## 日常运维命令
 
-在本地 PowerShell 里执行（需要本机 SSH 密钥 `~/.ssh/conyu_lh`）：
+在本地 PowerShell 里执行（需要本机 SSH 密钥 `~/.ssh/daoDun_deploy`）：
+
+> 部署密钥在 2026-10-22 轮换过一次：新的 `daoDun_deploy` 已加入服务器 root 的 `authorized_keys`，旧的 `conyu_lh` 已撤销（旧私钥已无法登录）。服务器上保留了撤销前的备份 `~/.ssh/authorized_keys.bak-before-revoke`。
 
 ```powershell
-$key = "$env:USERPROFILE\.ssh\conyu_lh"
+$key = "$env:USERPROFILE\.ssh\daoDun_deploy"
 $ssh = { param($cmd) ssh -i $key -o IdentitiesOnly=yes root@106.55.41.41 $cmd }
 
 # 服务状态 / 日志

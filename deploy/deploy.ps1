@@ -8,7 +8,7 @@
 # regardless of the system codepage.
 param(
   [string]$Server = '106.55.41.41',
-  [string]$Key = "$env:USERPROFILE\.ssh\conyu_lh"
+  [string]$Key = "$env:USERPROFILE\.ssh\daoDun_deploy"
 )
 
 $ErrorActionPreference = 'Stop'
